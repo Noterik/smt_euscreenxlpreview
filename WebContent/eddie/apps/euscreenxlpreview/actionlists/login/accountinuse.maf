@@ -1,0 +1,2 @@
+log(account in use)
+setContent(screen,summary,"account already in use pick other name")

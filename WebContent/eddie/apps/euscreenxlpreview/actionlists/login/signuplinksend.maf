@@ -1,0 +1,2 @@
+log(signup email send)
+setContent(screen,summary,"check email for activation link")

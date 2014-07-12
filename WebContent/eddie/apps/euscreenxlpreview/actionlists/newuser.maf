@@ -1,0 +1,6 @@
+log(new user signal)
+removeContent(screen,login)
+loadContent(screen,searchinput) // the input area with the search and filter parts
+loadContent(screen,searchoutput) // output area where the result lists will be shown
+loadContent(screen,summary) // we show a result summary above the result set after the search
+setContent(screen,summary,"Ready to search the euscreen database")

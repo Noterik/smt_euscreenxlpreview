@@ -1,0 +1,2 @@
+log(login fail action)
+setContent(screen,summary,"Wrong account or password")

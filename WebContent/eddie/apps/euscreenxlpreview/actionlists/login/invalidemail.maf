@@ -1,0 +1,2 @@
+log(invalid email)
+setContent(screen,summary,"invalid email address entered")

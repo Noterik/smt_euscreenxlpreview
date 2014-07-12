@@ -1,0 +1,11 @@
+setUrlTrigger(/lou/euscreen/itempage.html,/lou/domain/euscreenxl/html5application/euscreenxlpreview)
+setUrlTrigger(/lou/euscreen/play.jsp,/lou/domain/euscreenxl/html5application/euscreenxlpreview)
+loadStyleSheet(screen,generic) // load the generic stylesheet
+setRole(screen,"searchscreen") // change the role of this screen to searchscreen
+loadContent(screen,login) // load the login dialog
+loadContent(screen,searchinput) // the input area with the search and filter parts
+loadContent(screen,searchoutput) // output area where the result lists will be shown
+loadContent(screen,summary) // we show a result summary above the result set after the search
+loadContent(screen,itempage) // itempage that is hidden until needed
+loadContent(screen,notification) // basic notification animates in/out when needed
+callServer(openitempage,screen)

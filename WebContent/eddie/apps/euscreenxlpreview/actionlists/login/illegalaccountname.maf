@@ -1,0 +1,2 @@
+log(invalid account name)
+setContent(screen,summary,"invalid account name entered")

@@ -1,0 +1,3 @@
+setUrlTrigger(/lou/euscreen/confirmaccount,/lou/domain/euscreenxl/html5application/euscreenxlpreview)
+log(confirm account)
+callServer(confirmaccount,screen)

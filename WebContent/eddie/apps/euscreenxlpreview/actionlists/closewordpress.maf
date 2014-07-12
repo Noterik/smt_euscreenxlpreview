@@ -1,0 +1,2 @@
+log(we want to close wordpress)
+callServer(closewordpress,screen)
