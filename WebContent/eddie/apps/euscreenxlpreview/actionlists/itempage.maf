@@ -3,6 +3,7 @@ setUrlTrigger(/lou/euscreen/play.jsp,/lou/domain/euscreenxl/html5application/eus
 loadStyleSheet(screen,generic) // load the generic stylesheet
 setRole(screen,"searchscreen") // change the role of this screen to searchscreen
 loadContent(screen,login) // load the login dialog
+loadContent(screen,logo) // load the euscreen logo
 loadContent(screen,searchinput) // the input area with the search and filter parts
 loadContent(screen,searchoutput) // output area where the result lists will be shown
 loadContent(screen,summary) // we show a result summary above the result set after the search

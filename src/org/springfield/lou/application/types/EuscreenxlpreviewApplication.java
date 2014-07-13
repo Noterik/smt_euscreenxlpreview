@@ -300,7 +300,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			notification.putOnScope(s,"euscreenxlpreview", "show(screen "+s.getShortId()+" Spam Spam Spam wonderful Spaaaaammmm !!)");
 			notification.putOnScope(s,"euscreenxlpreview", "sound(spam)");
 		} else {
-			notification.putOnScope(s,"euscreenxlpreview", "show(screen "+s.getShortId()+" searched on "+sp.searchkey+")");	
+			//notification.putOnScope(s,"euscreenxlpreview", "show(screen "+s.getShortId()+" searched on "+sp.searchkey+")");	
 		}
 		
 		// call method to push the search div to all the screens (so they can all see what this user
@@ -381,7 +381,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			}
 			
 			// we want max 5 per row so if we pass that lets add a tr end and start
-			if (mod==5) {
+			if (mod==4) {
 				body.append("</tr></tr>");
 				mod = 0;
 			}
@@ -398,7 +398,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		long duration  = endtime - starttime;
 		
 		// report what happened in the summary div and load it on the screens and we are done !
-		setContentOnScope(s,"summary", "provider "+sp.provider+" total video items "+fslist.size()+" search count "+searchvalidcount+" querytime "+duration+"ms bytes "+(body.length()*2));
+		setContentOnScope(s,"summarytext", "Found  <font color=\"#60b4dc\">"+searchvalidcount+"</font> of <font color=\"#60b4dc\">"+fslist.size()+"</font> / Querytime <font color=\"#60b4dc\">"+duration+"ms</font> / Bytes <font color=\"#60b4dc\">"+(body.length()*2)+"</font>");
  	}
 	
 	private void addVideoThumb(StringBuffer body,FsNode n,SearchParams sp) {
@@ -627,7 +627,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	 * update the screen's searchkey element
 	 */
 	private void setSearchKey(Screen s,String searchkey) {	
-		String body="Keyword <input id=\"searchinput_searchkey\" size=\"30\" onkeyup=\"return components.searchinput.inputchange(event)\" value=\""+searchkey+"\"/>";
+		String body="<input id=\"searchinput_searchkey\" onkeyup=\"return components.searchinput.inputchange(event)\" value=\""+searchkey+"\"/>";
 		setContentOnScope(s,"searchinput_searchkeyd", body);
 	}
 	

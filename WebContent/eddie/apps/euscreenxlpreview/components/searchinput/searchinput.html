@@ -1,43 +1,82 @@
-<div id="searchinput_searchkeyd">Keyword <input id="searchinput_searchkey" size="30" onkeyup="return components.searchinput.inputchange(event)" value="" /></div>
-Provider 
-<select id="searchinput_provider" onchange="components.searchinput.setProvider(this.options[this.selectedIndex].value)">
- <option value="all">..loading</option>
-</select>
-<br />
-Type
-<select id="searchinput_mtype" onchange="components.searchinput.setMaterialType(this.options[this.selectedIndex].value)">
- <option value="all">..loading</option>
-</select>
-<br />
-Decade
-<select id="searchinput_decade" onchange="components.searchinput.setDecade(this.options[this.selectedIndex].value)">
- <option value="all">..loading</option>
-</select>
-<br />
-DataSource 
-<select id="searchinput_datasource" onchange="components.searchinput.setDataSource(this.options[this.selectedIndex].value)">
- <option value="all">..loading</option>
-</select>
-<br />
-<br />
-Max Display 
-<select id="searchinput_maxdisplay" onchange="components.searchinput.setMaxDisplay(this.options[this.selectedIndex].value)">
- <option value="1000">1000</option>
- <option value="10000">10000</option>
- <option value="1000">1000</option>
- <option value="100">100</option>
-</select>
-<br />
-Sort on 
-<select id="searchinput_sorted" onchange="components.searchinput.setSortField(this.options[this.selectedIndex].value)">
- <option value="id">ID</option>
- <option value="TitleSet_TitleSetInEnglish_title">English title</option>
- <option value="SpatioTemporalInformation_TemporalInformation_productionYear">Production year</option>
- <option value="topic">Topic</option>
- <option value="currentimportdate">Import date</option>
- <option value="hasRaws">Has videos</option>
-</select>
-<select id="searchinput_sortdirection" onchange="components.searchinput.setSortDirection(this.options[this.selectedIndex].value)">
- <option value="up">up</option>
- <option value="down">down</option>
-</select>
+<div class="form-group">
+	<label for="search-keyword">KEYWORD</label>
+	<div id="searchinput_searchkeyd"><input id="searchinput_searchkey" onkeyup="return components.searchinput.inputchange(event)" value="" /></div>
+	<br/>
+</div>
+
+<div class="form-group">
+	<label for="provider">PROVIDER</label>
+	<div class="select-wrap">
+		<select id="searchinput_provider" onchange="components.searchinput.setProvider(this.options[this.selectedIndex].value)">
+ 			<option value="all">..loading</option>
+		</select>
+	</div>
+	<div class="icon-chevron-down"></div>
+</div>
+
+
+<div class="form-group">
+	<label for="type">TYPE</label>
+	<div class="select-wrap">
+		<select id="searchinput_mtype" onchange="components.searchinput.setMaterialType(this.options[this.selectedIndex].value)">
+ 			<option value="all">..loading</option>
+		</select>
+	</div>
+	<div class="icon-chevron-down"></div>
+</div>
+
+<div class="form-group">
+	<label for="decade">DECADE</label>
+	<div class="select-wrap">
+		<select id="searchinput_decade" onchange="components.searchinput.setDecade(this.options[this.selectedIndex].value)">
+ 			<option value="all">..loading</option>
+		</select>
+	</div>
+	<div class="icon-chevron-down"></div>
+</div>
+
+<div class="form-group">
+	<label for="datasource">DATASOURCE</label>
+	<div class="select-wrap">
+		<select id="searchinput_datasource" onchange="components.searchinput.setDataSource(this.options[this.selectedIndex].value)">
+ 			<option value="all">..loading</option>
+		</select>
+	</div>
+	<div class="icon-chevron-down"></div>
+</div>
+
+<div class="form-group">
+	<label for="maxdiplay">MAX DISPLAY</label>
+	<div class="select-wrap">
+		<select id="searchinput_maxdisplay" onchange="components.searchinput.setMaxDisplay(this.options[this.selectedIndex].value)">
+ 			<option value="1000">1000</option>
+ 			<option value="10000">10000</option>
+ 			<option value="1000">1000</option>
+ 			<option value="100">100</option>
+		</select>
+	</div>
+	<div class="icon-chevron-down"></div>
+</div>
+
+
+<div class="form-group">
+	<label for="sorton">SORT ON</label>
+	<div class="select-sort-wrap">
+		<select id="searchinput_sorted" onchange="components.searchinput.setSortField(this.options[this.selectedIndex].value)">
+ 			<option value="id">ID</option>
+ 			<option value="TitleSet_TitleSetInEnglish_title">English title</option>
+ 			<option value="SpatioTemporalInformation_TemporalInformation_productionYear">Production year</option>
+ 			<option value="topic">Topic</option>
+ 			<option value="currentimportdate">Import date</option>
+			 <option value="hasRaws">Has videos</option>
+		</select>
+	</div>	
+	<div class="select-dir-wrap">
+		<select id="searchinput_sortdirection" onchange="components.searchinput.setSortDirection(this.options[this.selectedIndex].value)">
+ 			<option value="up">up</option>
+ 			<option value="down">down</option>
+		</select>
+	</div>
+	<div class="icon-chevron-down-sort"></div>
+	<div class="icon-chevron-down-dir"></div>
+</div>
