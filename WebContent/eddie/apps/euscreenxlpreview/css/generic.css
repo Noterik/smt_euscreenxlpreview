@@ -51,6 +51,7 @@ td {
   padding-bottom: 4px;
   font-size:11pt;
   font-style: bold;
+  width: 20%;
   }
   
 hr {
@@ -199,9 +200,10 @@ hr {
 
 #video1 {
 	position:absolute;
-	left: 10px;
-	top: 80px;
-	width: 80%;
+	left: 4%;
+	right: 4%;
+	top: 50px;
+	width: 94%;
 }
 
 #audio1 {
@@ -248,6 +250,7 @@ hr {
   color:#60b4dc;
   padding-top: 30px;
   font-style: bold;
+  width: auto;
   }
   
  #itempageright td {
@@ -255,6 +258,7 @@ hr {
   color:#555555;
   padding-top: 30px;
   font-style: bold;
+  width: auto;
   }
 
 #itempageunder {

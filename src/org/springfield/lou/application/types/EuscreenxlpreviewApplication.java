@@ -450,13 +450,13 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 				// if we have a screenshot if so display it if not not show i fixed image.
 				if (screenshot!=null && !screenshot.equals("")) {
 					if (!wantedna) screenshot = screenshot.replace("edna/", "");
-					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img width=\"100%\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				} else {
-					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img  width=\"100%\" src=\"http://images1.noterik.com/nothumb.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/nothumb.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				}
 			} else {
 				// so we have a broken video lets show them
-				body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img width=\"100%\" src=\"http://images1.noterik.com/brokenvideo.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+				body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/brokenvideo.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 			}
 	}
 	
@@ -478,13 +478,13 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 				// if we have a screenshot if so display it if not not show i fixed image.
 				if (screenshot!=null && !screenshot.equals("")) {
 					if (!wantedna) screenshot = screenshot.replace("edna/", "");
-					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img width=\"100%\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				} else {
-					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img  width=\"100%\" src=\"http://images1.noterik.com/pdf.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/pdf.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				}
 			} else {
 				// so we have a broken video lets show them
-				body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img width=\"100%\" src=\"http://images1.noterik.com/brokendoc.jpeg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+				body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/brokendoc.jpeg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 			}
 	}
 
@@ -495,7 +495,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		String path = n.getPath();
 		//log("enter addUnknown path = "+path);
 		String title = "unknown("+type+")";
-		body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img width=\"100%\" src=\"http://images1.noterik.com/confused.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+		body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/confused.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 		//log("done unknown");
 	}
 
@@ -517,13 +517,13 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 				// if we have a screenshot if so display it if not not show i fixed image.
 				if (screenshot!=null && !screenshot.equals("")) {
 					if (!wantedna) screenshot = screenshot.replace("edna/", "");
-					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img width=\"100%\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				} else {
-					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img  width=\"100%\" src=\"http://images1.noterik.com/audiofile.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/audiofile.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				}
 			} else {
 				// so we have a broken audio lets show them
-				body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img width=\"100%\" src=\"http://images1.noterik.com/audiofile.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+				body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/audiofile.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 			}
 	}
 	
@@ -539,7 +539,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		String type=n.getName();
 		String path = n.getPath();
 
-		body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img width=\"100%\" src=\"http://images1.noterik.com/series.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+		body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/series.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 	}
 
 
@@ -765,7 +765,6 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		// create the button to close the itempage, it works by sending a msg back that
 		// really closes it.
 		String body = "<table>";
-		body+="<tr><td>";
 		if (panel.equals("Overview")) { body+=getOverviewPanel(node); } else
 		if (panel.equals("Technical info")) { body+=getTechnicalInfoPanel(node); } else
 		if (panel.equals("Copyright")) { body+=getCopyrightPanel(node); } else
@@ -773,7 +772,6 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		if (panel.equals("Native langauge")) { body+=getNativeLangaugePanel(node); } else
 		if (panel.equals("Xml files")) { body+=getXmlFilesPanel(node); } else
 		if (panel.equals("Noterik fields")) { body+=getNoterikFieldsPanel(node); }
-		body+="</tr></table>";
 		return body;
 	}
 	
@@ -800,10 +798,10 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	 * generate the native langauge panel
 	 */
 	private String getNativeLangaugePanel(FsNode node) {
-		String body="<br /><b>Original language title = </b>"+node.getProperty("TitleSet_TitleSetInOriginalLanguage_title")+"<br/><br />";
-		body+="<b>Original language = </b>"+node.getProperty("originallanguage")+"<br/><br/>";
-		body+="<b>Original summary = </b>"+node.getProperty("summary")+"<br/><br/>";
-		body+="<b>Original language title = </b>"+node.getProperty("TitleSet_TitleSetInOriginalLanguage_title")+"<br/><br/>";
+		String body="<tr><td>Original language title<hr></td><th>"+node.getProperty("TitleSet_TitleSetInOriginalLanguage_title")+"<hr></th></tr>";
+		body+="<tr><td>Original language<hr></td><th>"+node.getProperty("originallanguage")+"<hr></th></tr>";
+		body+="<tr><td>Original summary<hr></td><th>"+node.getProperty("summary")+"<hr></th></tr>";
+		body+="<tr><td>Original language title<hr></td><th>"+node.getProperty("TitleSet_TitleSetInOriginalLanguage_title")+"<hr></th></tr>";
 		return body;
 	}
 	
@@ -811,8 +809,8 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	 * generate the copyright panel
 	 */
 	private String getCopyrightPanel(FsNode node) {
-		String body="<br /><b>Rights Terms And Conditions = </b>"+node.getProperty("rightsTermsAndConditions")+"<br/><br />";
-		body+="<b>Ipr Restrictions = </b>"+node.getProperty("iprRestrictions")+"<br/><br/>";
+		String body="<tr><td>Rights Terms And Conditions<hr></td><th>"+node.getProperty("rightsTermsAndConditions")+"<hr></th></tr>";
+		body+="<tr><td>Ipr Restrictions<hr></td><th>"+node.getProperty("iprRestrictions")+"<hr></th></tr>";
 		return body;
 	}
 	
@@ -820,8 +818,8 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	 * generate the xml panel with links
 	 */
 	private String getXmlFilesPanel(FsNode node) {
-		String body="<br /><b>First import date = </b>"+node.getProperty("firstimportdate")+"<br/><br />";
-		body+="<b>Current import date = </b>"+node.getProperty("currentimportdate")+"<br/><br/>";
+		String body="<tr><td>First import date<hr></td><th>"+node.getProperty("firstimportdate")+"<hr></th></tr>";
+		body+="<tr><td>Current import date<hr></td><th>"+node.getProperty("currentimportdate")+"<hr></th></tr>";
 		return body;
 	}
 	
@@ -829,12 +827,12 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	 * generate the technical panel
 	 */
 	private String getTechnicalInfoPanel(FsNode node) {
-		String body="<br /><b>Material type = </b>"+node.getProperty("TechnicalInformation_materialType")+"<br/><br />";
-		body+="<b>Original identifier = </b>"+node.getProperty("originalIdentifier")+"<br/><br/>";
-		body+="<b>Item color = </b>"+node.getProperty("TechnicalInformation_itemColor")+"<br/><br/>";
-		body+="<b>Record type = </b>"+node.getProperty("recordType")+"<br/><br/>";
-		body+="<b>Filename = </b>"+node.getProperty("filename")+"<br/><br/>";
-		body+="<b>EUScreen ID = </b>"+node.getId()+"<br/><br/>";
+		String body="<tr><td>Material type<hr></td><th>"+node.getProperty("TechnicalInformation_materialType")+"<hr></th></tr>";
+		body+="<tr><td>Original identifier<hr></td><th>"+node.getProperty("originalIdentifier")+"<hr></th></tr>";
+		body+="<tr><td>Item color<hr></td><th>"+node.getProperty("TechnicalInformation_itemColor")+"<hr></th></tr>";
+		body+="<tr><td>Record type<hr></td><th>"+node.getProperty("recordType")+"<hr></th></tr>";
+		body+="<tr><td>Filename<hr></td><th>"+node.getProperty("filename")+"<hr></th></tr>";
+		body+="<tr><td>EUScreen ID<hr></td><th>"+node.getId()+"<hr></th></tr>";
 		return body;
 	}
 	
@@ -842,8 +840,8 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	 * generate the description panel
 	 */
 	private String getDescriptionPanel(FsNode node) {
-		String body="<b>English summary = </b>"+node.getProperty("summaryInEnglish")+"<br/><br/>";
-		body+="<b>Extended Description = </b>"+node.getProperty("extendedDescription");
+		String body="<tr><td>English summary<hr></td><th>"+node.getProperty("summaryInEnglish")+"<hr></th></tr>";
+		body+="<tr><td>Extended Description<hr></td><th>"+node.getProperty("extendedDescription")+"<hr></th></tr>";
 		return body;
 	}
 	
@@ -851,13 +849,13 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	 * generate the noterik fields
 	 */
 	private String getNoterikFieldsPanel(FsNode node) {
-		String body="<b>Ingest report = </b>"+node.getProperty("ingestreport")+"<br/><br />";
-		body+="<b>Datasource = </b>"+node.getProperty("datasource")+"<br/><br/>";
-		body+="<b>Has raws = </b>"+node.getProperty("hasRaws")+"<br/><br/>";
-		body+="<b>Decade = </b>"+node.getProperty("decade")+"<br/><br/>";
-		body+="<b>Screenshot = </b>"+node.getProperty("screenshot")+"<br/><br/>";
-		body+="<b>Storage = </b>"+node.getPath()+"<br/><br/>";
-		body+="<b>Smithers node = </b><a href=\"http://player3.noterik.com:8081/bart"+node.getPath()+"\" target=\"new\">http://player3.noterik.com:8081/bart"+node.getPath()+"</a><br/><br/>";	
+		String body="<tr><td>Ingest report<hr></td><th>"+node.getProperty("ingestreport")+"<hr></th></tr>";
+		body+="<tr><td>Datasource<hr></td><th>"+node.getProperty("datasource")+"<hr></th></tr>";
+		body+="<tr><td>Has raws<hr></td><th>"+node.getProperty("hasRaws")+"<hr></th></tr>";
+		body+="<tr><td>Decade<hr></td><th>"+node.getProperty("decade")+"<hr></th></tr>";
+		body+="<tr><td>Screenshot<hr></td><th>"+node.getProperty("screenshot")+"<hr></th></tr>";
+		body+="<tr><td>Storage<hr></td><th>"+node.getPath()+"<hr></th></tr>";
+		body+="<tr><td>Smithers node<hr></td><th><a href=\"http://player3.noterik.com:8081/bart"+node.getPath()+"\" target=\"new\">http://player3.noterik.com:8081/bart"+node.getPath()+"<hr></th></tr>";	
 		return body;
 	}
 	
