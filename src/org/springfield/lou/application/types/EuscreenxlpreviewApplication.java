@@ -48,7 +48,7 @@ import org.springfield.mojo.interfaces.ServiceManager;
 public class EuscreenxlpreviewApplication extends Html5Application implements MargeObserver {
 	
 	private static Boolean cached = false;
-	private static Boolean wantedna = false;
+	private static Boolean wantedna = true;
 	private static String panels[] = { "Overview","Description","Native langauge","Copyright","Technical info","Noterik fields","Xml files"};
 
 	/*
@@ -92,6 +92,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			String[] params=content.split(","); 
 			String path = params[0];
 			String panel = params[1];
+			setContentOnScope(s,"itempageright",getRelatedInfoHeader(path,panel));
 			setContentOnScope(s,"itempageunder",getRelatedInfo(path,panel));
 			//FsNode n1 = Fs.getNode("/domain/euscreenxl/user/eu_nina/video/EUS_08BC758F7774480DA9E5F940C904FF07");
 			//System.out.println("N1="+n1);
@@ -164,6 +165,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		// the lowest panel on the item page is always the same so lets fill and
 		// put it on all the screens. lots of calls needed so put them in a method.
 	       s.log("step2 ");
+		setContentOnScope(s,"itempageright",getRelatedInfoHeader(path,"Overview"));
 		setContentOnScope(s,"itempageunder",getRelatedInfo(path,"Overview"));	
 		
 		// default the itempage is hidden, for now this is the fastest way to make it
@@ -420,13 +422,13 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 				// if we have a screenshot if so display it if not not show i fixed image.
 				if (screenshot!=null && !screenshot.equals("")) {
 					if (!wantedna) screenshot = screenshot.replace("edna/", "");
-					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img width=\"100%\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				} else {
-					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img  width=\"100%\" src=\"http://images1.noterik.com/nothumb.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itempimg\" src=\"http://images1.noterik.com/nothumb.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				}
 			} else {
 				// so we have a broken video lets show them
-				body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img width=\"100%\" src=\"http://images1.noterik.com/brokenvideo.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+				body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itempimg\" src=\"http://images1.noterik.com/brokenvideo.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 			}
 	}
 	
@@ -720,11 +722,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		setDataSourceOptions(s,"all",nodes);
 	}
 	
-	/*
-	 * creates the text needed for the related panel (itempageunder). Since its done dynamicly
-	 * it needs the panel name to create the correct one.
-	 */
-	private String getRelatedInfo(String path,String panel) {
+	private String getRelatedInfoHeader(String path,String panel) {
 		// we use the list again since we need to get the node from cache since
 		// it might have in memory generated fields.
 		FSList fslist = FSListManager.get("/domain/euscreenxl/user/*/*"); // get our collection from cache
@@ -747,11 +745,27 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 				body+="<td onmouseup=\"eddie.putLou('', 'switchpanel("+path+","+pname+")');\">"+pname+"</td>";	
 			}
 		}
-		body+="</tr>";
+		body+="</tr></table>";
+		System.out.println("BODY="+body);
+		return body;
+	}
+	
+	/*
+	 * creates the text needed for the related panel (itempageunder). Since its done dynamicly
+	 * it needs the panel name to create the correct one.
+	 */
+	private String getRelatedInfo(String path,String panel) {
+		// we use the list again since we need to get the node from cache since
+		// it might have in memory generated fields.
+		FSList fslist = FSListManager.get("/domain/euscreenxl/user/*/*"); // get our collection from cache
 		
-		// big ugly if to create the different pages, again we only generate the one we 
-		// are looking at.
-		body+="<tr><td colspan=\""+(panels.length+1)+"\">";
+		// get the node we want to display from the collection.
+		FsNode node = fslist.getNode(path);
+
+		// create the button to close the itempage, it works by sending a msg back that
+		// really closes it.
+		String body = "<table>";
+		body+="<tr><td>";
 		if (panel.equals("Overview")) { body+=getOverviewPanel(node); } else
 		if (panel.equals("Technical info")) { body+=getTechnicalInfoPanel(node); } else
 		if (panel.equals("Copyright")) { body+=getCopyrightPanel(node); } else
@@ -759,7 +773,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		if (panel.equals("Native langauge")) { body+=getNativeLangaugePanel(node); } else
 		if (panel.equals("Xml files")) { body+=getXmlFilesPanel(node); } else
 		if (panel.equals("Noterik fields")) { body+=getNoterikFieldsPanel(node); }
-		body+="</td></tr></table>";
+		body+="</tr></table>";
 		return body;
 	}
 	
@@ -767,18 +781,18 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	 * generate the overview panel 
 	 */
 	private String getOverviewPanel(FsNode node) {
-		String body="<br /><b>English Title = </b>"+node.getProperty("TitleSet_TitleSetInEnglish_title")+"<br/><br />";
-		body+="<b>Genre = </b>"+node.getProperty("genre")+"<br/><br/>";
-		body+="<b>Topic = </b>"+node.getProperty("topic")+"<br/><br/>";
-		body+="<b>SeriesOrCollectionTitle = </b>"+node.getProperty("TitleSet_TitleSetInEnglish_seriesOrCollectionTitle")+"<br/><br/>";
-		body+="<b>Thesaurus terms = </b>"+node.getProperty("ThesaurusTerm")+"<br/><br/>";
-		body+="<b>Production year = </b>"+node.getProperty("SpatioTemporalInformation_TemporalInformation_productionYear")+"<br/><br/>";
-		body+="<b>Broadcast date = </b>"+node.getProperty("SpatioTemporalInformation_TemporalInformation_broadcastDate")+"<br/><br/>";
-		body+="<b>Geographical coverage = </b>"+node.getProperty("SpatioTemporalInformation_SpatialInformation_GeographicalCoverage")+"<br/><br/>";
-		body+="<b>Contributor = </b>"+node.getProperty("contributor")+"<br/><br/>";
-		body+="<b>Publisherbroadcaster = </b>"+node.getProperty("publisherbroadcaster")+"<br/><br/>";
-		body+="<b>First Broadcastchannel = </b>"+node.getProperty("firstBroadcastChannel")+"<br/><br/>";
-		body+="<b>Provider = </b>"+node.getProperty("provider")+"<br/><br/>";
+		String body="<tr><td>English Title<hr></td><th>"+node.getProperty("TitleSet_TitleSetInEnglish_title")+"<hr></th></tr>";
+		body+="<tr><td>Genre<hr></td><th>"+node.getProperty("genre")+"<hr></th></tr>";
+		body+="<tr><td>Topic<hr></td><th>"+node.getProperty("topic")+"<hr></th></tr>";
+		body+="<tr><td>SeriesOrCollectionTitle<hr></td><th>"+node.getProperty("TitleSet_TitleSetInEnglish_seriesOrCollectionTitle")+"<hr></th></tr>";
+		body+="<tr><td>Thesaurus terms<hr></td><th>"+node.getProperty("ThesaurusTerm")+"<hr></th></tr>";
+		body+="<tr><td>Production year<hr></td><th>"+node.getProperty("SpatioTemporalInformation_TemporalInformation_productionYear")+"<hr></th></tr>";
+		body+="<tr><td>Broadcast date<hr></td><th>"+node.getProperty("SpatioTemporalInformation_TemporalInformation_broadcastDate")+"<hr></th></tr>";
+		body+="<tr><td>Geographical coverage<hr></td><th>"+node.getProperty("SpatioTemporalInformation_SpatialInformation_GeographicalCoverage")+"<hr></th></tr>";
+		body+="<tr><td>Contributor<hr></td><th>"+node.getProperty("contributor")+"<hr></th></tr>";
+		body+="<tr><td>Publisherbroadcaster<hr></td><th>"+node.getProperty("publisherbroadcaster")+"<hr></th></tr>";
+		body+="<tr><td>First Broadcastchannel<hr></td><th>"+node.getProperty("firstBroadcastChannel")+"<hr></th></tr>";
+		body+="<tr><td>Provider<hr></td><th>"+node.getProperty("provider")+"<hr></th></tr>";
 		return body;
 	}
 	
