@@ -94,16 +94,6 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			String panel = params[1];
 			setContentOnScope(s,"itempageright",getRelatedInfoHeader(path,panel));
 			setContentOnScope(s,"itempageunder",getRelatedInfo(path,panel));
-			//FsNode n1 = Fs.getNode("/domain/euscreenxl/user/eu_nina/video/EUS_08BC758F7774480DA9E5F940C904FF07");
-			//System.out.println("N1="+n1);
-		
-			try {
-				org.springfield.fs.FsNode n2 = org.springfield.fs.Fs.getNode("/domain/euscreenxl/user/eu_nina/video/EUS_08BC758F7774480DA9E5F940C904FF07");
-				System.out.println("WWWWWWWWWWWWWWWWWWWWWWWWWWWW="+n2);
-				if (n2!=null) System.out.println("GENRE="+n2.getProperty("genre"));
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
 	}
 	
 
@@ -421,7 +411,15 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			if (hasRaws!=null && hasRaws.equals("true")) {
 				// if we have a screenshot if so display it if not not show i fixed image.
 				if (screenshot!=null && !screenshot.equals("")) {
-					if (!wantedna) screenshot = screenshot.replace("edna/", "");
+					if (!wantedna) {
+						screenshot = screenshot.replace("edna/", "");
+					} else {
+						int pos = screenshot.indexOf("edna/");
+						if (pos!=-1) {
+							screenshot = "http://player3.noterik.com/"+screenshot.substring(pos);
+						}
+						//System.out.println("REMAP="+screenshot);
+					}
 					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				} else {
 					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itempimg\" src=\"http://images1.noterik.com/nothumb.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
@@ -746,7 +744,6 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			}
 		}
 		body+="</tr></table>";
-		System.out.println("BODY="+body);
 		return body;
 	}
 	
