@@ -411,15 +411,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			if (hasRaws!=null && hasRaws.equals("true")) {
 				// if we have a screenshot if so display it if not not show i fixed image.
 				if (screenshot!=null && !screenshot.equals("")) {
-					if (!wantedna) {
-						screenshot = screenshot.replace("edna/", "");
-					} else {
-						int pos = screenshot.indexOf("edna/");
-						if (pos!=-1) {
-							screenshot = "http://player3.noterik.com/"+screenshot.substring(pos);
-						}
-						//System.out.println("REMAP="+screenshot);
-					}
+					screenshot = setEdnaMapping(screenshot);
 					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				} else {
 					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itempimg\" src=\"http://images1.noterik.com/nothumb.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
@@ -447,7 +439,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			if (hasRaws!=null && hasRaws.equals("true")) {
 				// if we have a screenshot if so display it if not not show i fixed image.
 				if (screenshot!=null && !screenshot.equals("")) {
-					if (!wantedna) screenshot = screenshot.replace("edna/", "");
+					screenshot = setEdnaMapping(screenshot);
 					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				} else {
 					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/nothumb.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
@@ -475,7 +467,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			if (hasRaws!=null && hasRaws.equals("true")) {
 				// if we have a screenshot if so display it if not not show i fixed image.
 				if (screenshot!=null && !screenshot.equals("")) {
-					if (!wantedna) screenshot = screenshot.replace("edna/", "");
+					screenshot = setEdnaMapping(screenshot);
 					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				} else {
 					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/pdf.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
@@ -514,7 +506,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			if (hasRaws!=null && hasRaws.equals("true")) {
 				// if we have a screenshot if so display it if not not show i fixed image.
 				if (screenshot!=null && !screenshot.equals("")) {
-					if (!wantedna) screenshot = screenshot.replace("edna/", "");
+					screenshot = setEdnaMapping(screenshot);
 					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				} else {
 					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/audiofile.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
@@ -854,6 +846,18 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		body+="<tr><td>Storage<hr></td><th>"+node.getPath()+"<hr></th></tr>";
 		body+="<tr><td>Smithers node<hr></td><th><a href=\"http://player3.noterik.com:8081/bart"+node.getPath()+"\" target=\"new\">http://player3.noterik.com:8081/bart"+node.getPath()+"<hr></th></tr>";	
 		return body;
+	}
+	
+	private String setEdnaMapping(String screenshot) {
+		if (!wantedna) {
+			screenshot = screenshot.replace("edna/", "");
+		} else {
+			int pos = screenshot.indexOf("edna/");
+			if 	(pos!=-1) {
+				screenshot = "http://images.euscreenxl.eu/"+screenshot.substring(pos+5);
+			}
+		}
+		return screenshot;
 	}
 	
 
