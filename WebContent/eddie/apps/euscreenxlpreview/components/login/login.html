@@ -1,27 +1,28 @@
-<table><tr><td>
-Login preview tool<br /></br>
-<form id="login_form" type="submit">
-account<br />
-<input type="text" size="20" id="login_account" /><br />
-password<br />
-<input type="password" size="20" id="login_password" />
-<br />
-<input type="submit" value="login" /></form>
-<br />
-<a href="">forgot password</a>
-</td>
-<td>
-No account yet ? Sign up !<br /><br />
-<form id="signup_form" type="submit">
-account<br />
-<input type="text" size="20" id="signup_account" /><br />
-email<br />
-<input type="text" size="20" id="signup_email" /><br />
-password and repeat password<br />
-<input type="password" size="20" id="signup_password" />
-<input type="password" size="20" id="signup_repeatpassword" />
-</br>
-<input type="submit" value="sign up" /></form>
+<div id="logopart">
+	<img id="logoimg" src="http://images1.noterik.com/euscreen/euscreen_preview_logo.png" />
+	<div id="portalbutton"><a href="http://www.euscreen.eu"><img src="http://images1.noterik.com/euscreen/portalbutton.png" border="0" /></a></div>
+</div>
+<div id="loginwindow">
+	<div class="tab-content">
+		<div class="tab-pane active" id="signin">
+			<form id="login_form" type="submit">
+			<div id="login_account_div">
+			<div id="account-label">Account</div>
+			<input class="form-control" type="text" id="login_account" />
+			</div>
+			
+			<div id="login_password_div">
+			<div id="password-label">Password</div>
+			<input class="form-control" type="password" id="login_password" />
+			</div>
+			<input id="signinbutton" type="image" src="http://images1.noterik.com/euscreen/signinbutton.png" alt="Submit Form" /></form>
+ 
+   		</div>
+    	<div class="tab-pane " id="signup">
+    		SIGNUP
+    	</div>
+	</div>
+</div>
 
-</td></tr>
-</table>
+
+

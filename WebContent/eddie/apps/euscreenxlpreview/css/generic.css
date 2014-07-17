@@ -57,6 +57,20 @@ td {
 hr {
 	border: 0; border-top: 1px solid #dddddd;
 	}
+	
+#logopart {
+	color: #ffffff;
+	text-align: left;
+	font-style: bold;
+	background-color: #ffffff;
+	position:fixed;
+	top:0px;
+	left:0px;
+	width:100%;
+	height: 69px;
+	border:1px solid #dddddd;
+	z-index:20;
+}
   
 #logo {
 	color: #ffffff;
@@ -74,7 +88,7 @@ hr {
 
 #logoimg {
 	position:fixed;
-	left : 5px;
+	left : 15px;
 	top : 10px;
 }
 
@@ -279,17 +293,14 @@ hr {
 
 
 #login {
-	background-color: #3c3c5c;;
+	background-color: #ececec;
 	color: #AAA9FB;
 	position:absolute;
-	top:5%;
-	left:50%;
-	width:600px;
-	height:200px;
-	padding: 3px;
-	margin:0px 0 0 -300px;
-	border:1px solid #1c1c3c;;
-	opacity: 0.9;
+	top:0px;
+	left:0px;
+	width:100%;
+	height:100%;
+	padding: 0px;
 }
 
 #searchinput_searchkeyd {
@@ -540,5 +551,127 @@ label {
   margin-top: 10px;
   margin-left: -10px;
   margin-bottom: 2px;
+}
+
+#account-label {
+  position: absolute;
+  top: 7px;
+  left: -80px;
+  font-size: 20px
+  font-style: bold;
+  color: #777;
+  letter-spacing: 1.2px;
+  margin-top: 10px;
+  margin-left: -10px;
+  margin-bottom: 2px;
+}
+
+#password-label {
+  position: absolute;
+  top: 7px;
+  left: -80px;
+  font-size: 20px
+  font-style: bold;
+  color: #777;
+  letter-spacing: 1.2px;
+  margin-top: 10px;
+  margin-left: -10px;
+  margin-bottom: 2px;
+}
+
+#loginwindow {
+  	position: absolute;
+	left: 30%;
+	right: 30%;
+	top: 30%;
+	bottom: 20%;
+}
+
+.tab-content {
+  height: 150px;
+  background: #fff;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  -webkit-border-bottom-right-radius: 3px;
+  -webkit-border-bottom-left-radius: 3px;
+  -moz-border-radius-bottomright: 3px;
+  -moz-border-radius-bottomleft: 3px;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+.tab-content > .tab-pane {
+  display: none;
+}
+
+.tab-content > .active {
+  display: block;
+}
+
+.form-control {
+  display: block;
+  width: 50%;
+  height: 24px;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #555555;
+  background-color: #ffffff;
+  background-image: none;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+  -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+  transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+
+#login_account_div {
+	position: absolute;
+	top: 15px;
+	left: 40%;
+	width: 90%;
+}
+
+#login_password_div {
+	position: absolute;
+	top: 70px;
+	left: 40%;
+	width: 90%;
+}
+
+#signinbutton {
+	position: relative;
+	bottom: -120px;
+	left: 0px;
+}
+
+.intro-text {
+  width: 50%;
+  margin: 0 auto;
+  margin-top: 15%;
+}
+
+.intro-text p {
+  font-size: 1.071em;
+  text-align: justify;
+  color: #989898;
+  line-height: 1.7em;
+}
+.intro-text h3 {
+  font-weight: normal;
+  color: #6ba222;
+}
+
+#portalbutton {
+  position: absolute;
+  top: 13px;
+  right: 40px;
 }
 
