@@ -3,8 +3,12 @@
 	<div id="portalbutton"><a href="http://www.euscreen.eu"><img src="http://images1.noterik.com/euscreen/portalbutton.png" border="0" /></a></div>
 </div>
 <div id="loginwindow">
+	<div id="tab-selector">
+		<div id="signin-tab">Sign in</div>
+		<div id="signup-tab">Sign up</div>
+	</div>
 	<div class="tab-content">
-		<div class="tab-pane active" id="signin">
+		<div class="tab-pane" id="signin">
 			<form id="login_form" type="submit">
 			<div id="login_account_div">
 			<div id="account-label">Account</div>
@@ -19,8 +23,29 @@
  
    		</div>
     	<div class="tab-pane " id="signup">
-    		SIGNUP
+			<form id="signup_form" type="submit">
+			<div id="login_account_div">
+			<div id="account-label">Account</div>
+			<input class="form-control" type="text" id="signup_account" />
+			</div>
+			
+			<div id="signup_email_div">
+			<div id="signupemail-label">Email</div>
+			<input class="form-control" type="email" id="signup_email" />
+			</div>
+			
+			<div id="signup_password_div">
+			<div id="signuppassword-label">Password</div>
+			<input class="form-control" type="password" id="signup_password" />
+			</div>
+			
+			<div id="signup_repeatpassword_div">
+			<div id="signuprepeatpassword-label">Repeat Password</div>
+			<input class="form-control" type="password" id="signup_repeatpassword" />
+			</div>
+			<input id="signupbutton" type="image" src="http://images1.noterik.com/euscreen/signupbutton.png" alt="Submit Form" /></form>
     	</div>
+    	<div id="loginfeedback"></div>
 	</div>
 </div>
 

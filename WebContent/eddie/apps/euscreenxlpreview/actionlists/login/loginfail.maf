@@ -1,2 +1,2 @@
 log(login fail action)
-setContent(screen,summary,"Wrong account or password")
+setContent(screen,loginfeedback,"Wrong account or password")

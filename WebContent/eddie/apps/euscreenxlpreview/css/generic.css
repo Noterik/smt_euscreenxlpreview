@@ -556,7 +556,7 @@ label {
 #account-label {
   position: absolute;
   top: 7px;
-  left: -80px;
+  left: -70px;
   font-size: 20px
   font-style: bold;
   color: #777;
@@ -579,6 +579,51 @@ label {
   margin-bottom: 2px;
 }
 
+#signupemail-label {
+  position: absolute;
+  top: 7px;
+  left: -55px;
+  font-size: 20px
+  font-style: bold;
+  color: #777;
+  letter-spacing: 1.2px;
+  margin-top: 10px;
+  margin-left: -10px;
+  margin-bottom: 2px;
+}
+
+#signuppassword-label {
+  position: absolute;
+  top: 7px;
+  left: -80px;
+  font-size: 20px
+  font-style: bold;
+  color: #777;
+  letter-spacing: 1.2px;
+  margin-top: 10px;
+  margin-left: -10px;
+  margin-bottom: 2px;
+}
+
+#loginfeedback {
+  position: absolute;
+  left: 130px;
+  bottom: 25px;
+}
+
+#signuprepeatpassword-label {
+  position: absolute;
+  top: 7px;
+  left: -135px;
+  font-size: 20px
+  font-style: bold;
+  color: #777;
+  letter-spacing: 1.2px;
+  margin-top: 10px;
+  margin-left: -10px;
+  margin-bottom: 2px;
+}
+
 #loginwindow {
   	position: absolute;
 	left: 30%;
@@ -587,8 +632,65 @@ label {
 	bottom: 20%;
 }
 
+#signin {
+	visibility: visible;
+}
+
+#signup {
+	visibility: hidden;
+}
+
+#signin-tab {
+  position: absolute;
+  left:0px;
+  height: 17px;
+  width: 50px;
+  background: #ffffff;
+  padding-top: 12px;
+  padding-bottom: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 0px solid #ddd;
+  -webkit-border-top-right-radius: 3px;
+  -webkit-border-top-left-radius: 3px;
+  -moz-border-radius-topright: 3px;
+  -moz-border-radius-topleft: 3px;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+}
+
+#signup-tab {
+  position: absolute;
+  left:90px;
+  height: 17px;
+  width: 50px;
+  background: #ececec;
+  padding-top: 12px;
+  padding-bottom: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 0px solid #ddd;
+  -webkit-border-bottom-right-radius: 3px;
+  -webkit-border-bottom-left-radius: 3px;
+  -moz-border-radius-bottomright: 3px;
+  -moz-border-radius-bottomleft: 3px;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+#tab-selector {
+  height: 40px;
+}
+
 .tab-content {
+  position: absolute;
+  width: 100%;
   height: 150px;
+  top: 42px;
   background: #fff;
   padding-top: 20px;
   padding-bottom: 20px;
@@ -603,14 +705,9 @@ label {
   -moz-border-radius-bottomleft: 3px;
   border-bottom-right-radius: 3px;
   border-bottom-left-radius: 3px;
-}
-
-.tab-content > .tab-pane {
-  display: none;
-}
-
-.tab-content > .active {
-  display: block;
+  -webkit-border-top-right-radius: 3px;
+  -moz-border-radius-topright: 3px;
+  border-top-right-radius: 3px;
 }
 
 .form-control {
@@ -646,9 +743,37 @@ label {
 	width: 90%;
 }
 
+#signup_email_div {
+	position: absolute;
+	top: 70px;
+	left: 40%;
+	width: 90%;
+}
+
+#signup_password_div {
+	position: absolute;
+	top: 125px;
+	left: 40%;
+	width: 90%;
+}
+
+#signup_repeatpassword_div {
+	position: absolute;
+	top: 180px;
+	left: 40%;
+	width: 90%;
+}
+
+
 #signinbutton {
 	position: relative;
 	bottom: -120px;
+	left: 0px;
+}
+
+#signupbutton {
+	position: relative;
+	bottom: -166px;
 	left: 0px;
 }
 

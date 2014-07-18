@@ -24,6 +24,29 @@ function Login(options){
                 eddie.putLou("login", "signup(" + $('#signup_account').val() + "," + $('#signup_email').val() + "," + $('#signup_password').val() + "," + $('#signup_repeatpassword').val() + ")");
                 return false;
         });
+        
+
+        $('#signin-tab').mouseup(function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+		        $('#signup-tab').css('background','#ececec');
+				$('#signin-tab').css('background','#ffffff');
+				$('#signin').css('visibility','visible');
+				$('#signup').css('visibility','hidden');
+				$('.tab-content').css('height','150px');
+                return false;
+        });
+        
+        $('#signup-tab').mouseup(function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $('#signin-tab').css('background','#ececec');
+				$('#signup-tab').css('background','#ffffff');
+				$('#signin').css('visibility','hidden');
+				$('#signup').css('visibility','visible');
+				$('.tab-content').css('height','240px');
+                return false;
+        });
 
 
  
