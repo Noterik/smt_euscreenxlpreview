@@ -95,6 +95,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			String panel = params[1];
 			setContentOnScope(s,"itempageright",getRelatedInfoHeader(path,panel));
 			setContentOnScope(s,"itempageunder",getRelatedInfo(path,panel));
+			setContentOnScope(s,"itemcommands",getItemCommands(s,path));
 	}
 	
 
@@ -132,6 +133,8 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 				} else {
 					body+="<source src=\""+mount+"\" type=\"video/mp4\" /></video>";
 				}
+				body+="<div id=\"itemcommands\"></div>";
+				
 				// lets fill the 'itempageleft' div on all the screens in the scope with it
 				setContentOnScope(s,"itempageleft",body);	
 			} else {
@@ -713,6 +716,17 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		setDataSourceOptions(s,"all",nodes);
 	}
 	
+	private String getItemCommands(Screen s,String path) {
+		String body ="TEST";
+		FsNode snode = s.getNode(path);
+		if (snode!=null) {
+			body+=" OK";
+		} else {
+			body+=" FAIL";
+		}
+		return body;
+	}
+	
 	private String getRelatedInfoHeader(String path,String panel) {
 		// we use the list again since we need to get the node from cache since
 		// it might have in memory generated fields.
@@ -749,7 +763,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		// it might have in memory generated fields.
 		FSList fslist = FSListManager.get("/domain/euscreenxl/user/*/*"); // get our collection from cache
 		
-		// get the node we want to display from the collection.
+		// get the node we want to display from the collection.		
 		FsNode node = fslist.getNode(path);
 
 		// create the button to close the itempage, it works by sending a msg back that
