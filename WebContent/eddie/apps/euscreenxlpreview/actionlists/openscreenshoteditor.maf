@@ -1,0 +1,2 @@
+log(open screenshot editor)
+callServer(openscreenshoteditor,screen,content)

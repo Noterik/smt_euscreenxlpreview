@@ -60,13 +60,6 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		super(id); 
 		// default scoop is each screen is its own location, so no multiscreen effects
 		setLocationScope("screen"); 
-
-		// small hack we start a thread so all the collections are loaded in Maggie
-		if (!cached) {
-		//	new MaggieLoader(this);
-		//	cached = true;
-		}
-	//	LazyMarge.addObserver("/domain/euscreenxl/html/wordpress/page", this);
 	}
 	
 	/*
@@ -95,7 +88,6 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			String panel = params[1];
 			setContentOnScope(s,"itempageright",getRelatedInfoHeader(path,panel));
 			setContentOnScope(s,"itempageunder",getRelatedInfo(path,panel));
-			setContentOnScope(s,"itemcommands",getItemCommands(s,path));
 	}
 	
 
@@ -116,30 +108,8 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		// We might want to display different things depending on type so we need to
 		// check them one by one and do what is needed.
 
-        s.log("video "+type);
 		if (type.equals("video")) {
-			// its a video object so lets load and send the video tag to the screens.
-			String body="<video id=\"video1\" autoplay controls preload=\"none\" data-setup=\"{}\">";
-			// if its a video we need its rawvideo node for where the file is.
-			FsNode rawvideonode = Fs.getNode(path+"/rawvideo/1");
-			if (rawvideonode!=null) {
-				String mounts[] = rawvideonode.getProperty("mount").split(",");
-			
-				// based on the type of mount (path) create the rest of the video tag.
-				String mount = mounts[0];
-				if (mount.indexOf("http://")==-1) {
-					String ap = "http://"+mount+".noterik.com/progressive/"+mount+path+"/rawvideo/1/raw.mp4";
-					body+="<source src=\""+ap+"\" type=\"video/mp4\" /></video>";
-				} else {
-					body+="<source src=\""+mount+"\" type=\"video/mp4\" /></video>";
-				}
-				body+="<div id=\"itemcommands\"></div>";
-				
-				// lets fill the 'itempageleft' div on all the screens in the scope with it
-				setContentOnScope(s,"itempageleft",body);	
-			} else {
-				setContentOnScope(s,"itempageleft","broken video");
-			}
+			showVideoPreview(s,path);
 		} else if (type.equals("audio")) {
 			// its a audio object so lets load and send the video tag to the screens.
 			String body="<audio id=\"audio1\" autoplay controls preload=\"none\" data-setup=\"{}\">";
@@ -158,17 +128,20 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		
 		// the lowest panel on the item page is always the same so lets fill and
 		// put it on all the screens. lots of calls needed so put them in a method.
-	       s.log("step2 ");
 		setContentOnScope(s,"itempageright",getRelatedInfoHeader(path,"Overview"));
 		setContentOnScope(s,"itempageunder",getRelatedInfo(path,"Overview"));	
+		setContentOnScope(s,"backbutton","<&nbsp;Back");	
+		
 		
 		// default the itempage is hidden, for now this is the fastest way to make it
 		// visible i send it a message that makes it visible :). Will find a faster way soon.
 		// also want a quicker way to send a component a message instead of getting it first.
+		
+		ComponentInterface searchoutput = getComponentManager().getComponent("searchoutput");
+		searchoutput.putOnScope(s,"euscreenxlpreview", "close()");
+		
 		ComponentInterface itempage = getComponentManager().getComponent("itempage");
-	       s.log("step3 ");
 		itempage.putOnScope(s,"euscreenxlpreview", "show()");	
-	       s.log("step4! ");
  	}
 	
 	/*
@@ -244,9 +217,19 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		// this method sends 3 messages, should be easer still its not that bad
 		// make the itempageleft empty this stops the video !!
 		setContentOnScope(s,"itempageleft","");
+		setContentOnScope(s,"backbutton","");
 		 // send message to hide the page
+		
+		ComponentInterface searchoutput = getComponentManager().getComponent("searchoutput");
+		searchoutput.putOnScope(s,"euscreenxlpreview", "show()");
+		
 		ComponentInterface itempage = getComponentManager().getComponent("itempage");
 		itempage.putOnScope(s,"euscreenxlpreview", "close()");
+		
+		ComponentInterface editor = getComponentManager().getComponent("screenshoteditor");
+		editor.putOnScope(s,"euscreenxlpreview", "close()");
+		
+
 		// lets tell the users that we closed the itempage
 		ComponentInterface notification = getComponentManager().getComponent("notification");
 		notification.putOnScope(s,"euscreenxlpreview", "show(user "+s.getShortId()+" closed the itempage)");
@@ -416,13 +399,13 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 				// if we have a screenshot if so display it if not not show i fixed image.
 				if (screenshot!=null && !screenshot.equals("")) {
 					screenshot = setEdnaMapping(screenshot);
-					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				} else {
-					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itempimg\" src=\"http://images1.noterik.com/nothumb.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itempimg\" width=\"320\" src=\"http://images1.noterik.com/nothumb.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				}
 			} else {
 				// so we have a broken video lets show them
-				body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itempimg\" src=\"http://images1.noterik.com/brokenvideo.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+				body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itempimg\" width=\"320\" src=\"http://images1.noterik.com/brokenvideo.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 			}
 	}
 	
@@ -444,13 +427,13 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 				// if we have a screenshot if so display it if not not show i fixed image.
 				if (screenshot!=null && !screenshot.equals("")) {
 					screenshot = setEdnaMapping(screenshot);
-					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				} else {
-					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/nothumb.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/nothumb.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				}
 			} else {
 				// so we have a broken video lets show them
-				body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/brokenvideo.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+				body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/brokenvideo.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 			}
 	}
 	
@@ -472,13 +455,13 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 				// if we have a screenshot if so display it if not not show i fixed image.
 				if (screenshot!=null && !screenshot.equals("")) {
 					screenshot = setEdnaMapping(screenshot);
-					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				} else {
-					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/pdf.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/pdf.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				}
 			} else {
 				// so we have a broken video lets show them
-				body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/brokendoc.jpeg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+				body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/brokendoc.jpeg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 			}
 	}
 
@@ -489,7 +472,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		String path = n.getPath();
 		//log("enter addUnknown path = "+path);
 		String title = "unknown("+type+")";
-		body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/confused.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+		body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/confused.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 		//log("done unknown");
 	}
 
@@ -511,13 +494,13 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 				// if we have a screenshot if so display it if not not show i fixed image.
 				if (screenshot!=null && !screenshot.equals("")) {
 					screenshot = setEdnaMapping(screenshot);
-					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				} else {
-					body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/audiofile.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/audiofile.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				}
 			} else {
 				// so we have a broken audio lets show them
-				body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/audiofile.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+				body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/audiofile.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 			}
 	}
 	
@@ -533,7 +516,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		String type=n.getName();
 		String path = n.getPath();
 
-		body.append("<td width=\"20%\"><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/series.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+		body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/series.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 	}
 
 
@@ -717,13 +700,11 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	}
 	
 	private String getItemCommands(Screen s,String path) {
-		String body ="TEST";
-		FsNode snode = s.getNode(path);
-		if (snode!=null) {
-			body+=" OK";
-		} else {
-			body+=" FAIL";
-		}
+		String body = "<div id=\"mediaactionlabel\">MEDIA ACTIONS</div>";
+		body += "<div id=\"approvemedia\">Approve this media</div>";
+		body += "<div id=\"disapprovemedia\">Reject media</div>";
+		body += "<div id=\"approvemedianext\">Approve media and next</div>";
+		body += "<div id=\"disapprovemedianext\">Reject media and next</div>";
 		return body;
 	}
 	
@@ -737,7 +718,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 
 		// create the button to close the itempage, it works by sending a msg back that
 		// really closes it.
-		String body = "<table><th onmouseup=\"eddie.putLou('', 'close()');\"\"><--</th>";
+		String body = "<table>";
 		
 		// we create the panels and turn the correct one dark, there is no contruction clientside we 
 		// just create the correct table everytime. Since we need to sync it over multiple screens it
@@ -745,9 +726,9 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		for(int i=0;i<panels.length;i++) {
 			String pname = panels[i];
 			if (pname.equals(panel)) {
-				body+="<th onmouseup=\"eddie.putLou('', 'switchpanel("+path+","+pname+")');\">"+pname+"</th>";
+				body+="<th class=\"switchheader\" onmouseup=\"eddie.putLou('', 'switchpanel("+path+","+pname+")');\">"+pname+"</th>";
 			} else {
-				body+="<td onmouseup=\"eddie.putLou('', 'switchpanel("+path+","+pname+")');\">"+pname+"</td>";	
+				body+="<td class=\"switchheader\" onmouseup=\"eddie.putLou('', 'switchpanel("+path+","+pname+")');\">"+pname+"</td>";	
 			}
 		}
 		body+="</tr></table>";
@@ -784,6 +765,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	 */
 	private String getOverviewPanel(FsNode node) {
 		String body="<tr><td>English Title<hr></td><th>"+node.getProperty("TitleSet_TitleSetInEnglish_title")+"<hr></th></tr>";
+		body+="<tr><td>Clip Title<hr></td><th>"+node.getProperty("clipTitle")+"<hr></th></tr>";
 		body+="<tr><td>Genre<hr></td><th>"+node.getProperty("genre")+"<hr></th></tr>";
 		body+="<tr><td>Topic<hr></td><th>"+node.getProperty("topic")+"<hr></th></tr>";
 		body+="<tr><td>SeriesOrCollectionTitle<hr></td><th>"+node.getProperty("TitleSet_TitleSetInEnglish_seriesOrCollectionTitle")+"<hr></th></tr>";
@@ -834,6 +816,8 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		String body="<tr><td>Material type<hr></td><th>"+node.getProperty("TechnicalInformation_materialType")+"<hr></th></tr>";
 		body+="<tr><td>Original identifier<hr></td><th>"+node.getProperty("originalIdentifier")+"<hr></th></tr>";
 		body+="<tr><td>Item color<hr></td><th>"+node.getProperty("TechnicalInformation_itemColor")+"<hr></th></tr>";
+		body+="<tr><td>Item sound<hr></td><th>"+node.getProperty("TechnicalInformation_itemSound")+"<hr></th></tr>";
+		body+="<tr><td>Item duration<hr></td><th>"+node.getProperty("TechnicalInformation_itemDuration")+"<hr></th></tr>";
 		body+="<tr><td>Record type<hr></td><th>"+node.getProperty("recordType")+"<hr></th></tr>";
 		body+="<tr><td>Filename<hr></td><th>"+node.getProperty("filename")+"<hr></th></tr>";
 		body+="<tr><td>EUScreen ID<hr></td><th>"+node.getId()+"<hr></th></tr>";
@@ -863,6 +847,100 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		return body;
 	}
 	
+	private void showVideoPreview(Screen s,String path) {
+		// its a video object so lets load and send the video tag to the screens.
+		String body="<video id=\"video1\" autoplay controls preload=\"none\" data-setup=\"{}\">";
+
+		// if its a video we need its rawvideo node for where the file is.
+		FsNode rawvideonode = Fs.getNode(path+"/rawvideo/1");
+		if (rawvideonode!=null) {
+			String mounts[] = rawvideonode.getProperty("mount").split(",");
+		
+			// based on the type of mount (path) create the rest of the video tag.
+			String mount = mounts[0];
+			if (mount.indexOf("http://")==-1) {
+				String ap = "http://"+mount+".noterik.com/progressive/"+mount+path+"/rawvideo/1/raw.mp4";
+				body+="<source src=\""+ap+"\" type=\"video/mp4\" /></video>";
+			} else {
+				body+="<source src=\""+mount+"\" type=\"video/mp4\" /></video>";
+			}
+		} else {
+			// missing video
+		}
+
+		// if its a video we need its rawvideo node for where the file is.
+		FsNode videonode = Fs.getNode(path);
+		if (videonode!=null) {
+			System.out.println("RR="+videonode.asXML());		
+			boolean allowed = s.checkNodeActions(videonode, "read");
+			allowed = true;
+			// nice lets set the preview image
+			String screenshot  = videonode.getProperty("screenshot");
+			if (screenshot!=null && !screenshot.equals("")) {
+				body += "<div id=\"screenshotlabel\">SELECTED MEDIA THUMBNAIL</div>";
+				screenshot = setEdnaMapping(screenshot);
+				if (allowed) {
+					body +="<div onmouseup=\"eddie.putLou('','openscreenshoteditor("+videonode.getId()+")');\"><img id=\"screenshot\" src=\""+screenshot+"\" /></div>";
+					body += "<div onmouseup=\"eddie.putLou('','openscreenshoteditor("+videonode.getId()+")');\" id=\"screenshoteditlink\">Select different thumbnail</div>";
+				} else {
+					body +="<div><img id=\"screenshot\" src=\""+screenshot+"\" /></div>";
+				}
+			}
+			
+			if (allowed) {
+				body += getItemCommands(s,path);
+			}
+		}
+		
+		setContentOnScope(s,"itempageleft",body);	
+	}
+	
+	public void setscreenshot(Screen s,String content) {
+		log("setscreenshot "+content);
+		setContentOnScope(s,"screenshoteditor","");
+		ComponentInterface editor = getComponentManager().getComponent("screenshoteditor");
+		editor.putOnScope(s,"euscreenxlpreview", "close()");
+	}
+	
+	public void openscreenshoteditor(Screen s,String id) {
+		log("Screeneditor id="+id);
+		String body = "<table id=\"selectscreenshot\">";
+		System.out.println("Screenshot editor "+id);
+		String uri = "/domain/euscreenxl/user/*/*"; // does this make sense, new way of mapping (daniel)
+		FSList fslist = FSListManager.get(uri);
+		List<FsNode> nodes = fslist.getNodesFiltered(id.toLowerCase()); // find the item
+		if (nodes!=null && nodes.size()>0) {
+			FsNode videonode = (FsNode)nodes.get(0);
+			String screenshot = videonode.getProperty("screenshot");
+			if (screenshot!=null) {
+				int pos = screenshot.indexOf("/shots/");
+				if (pos!=-1) {
+					int mod = 0;
+					String basepart = screenshot.substring(0,pos)+"/shots/1/";
+					basepart = basepart.replace("edna/","");
+					System.out.println("basepart="+basepart);
+					body += "<tr>";
+					for (int i=0;i<(5*60);i++) {
+						mod++;
+						String newpath = basepart + getShotsFormat(i);
+						body += "<td><div class=\"sitem\" onmouseup=\"eddie.putLou('','setscreenshot("+id+","+i+")');\"><img class=\"sitemimg\" src=\""+newpath+"\" /></div></td>";
+						if (mod==4) {
+							body += "</tr></tr>";
+							mod = 0;
+						}
+					}
+					body += "</tr>";
+				}
+			} else {
+				System.out.println("Can not find video node");
+			}
+		}
+		body += "</table>";
+		setContentOnScope(s,"screenshoteditor",body);
+		ComponentInterface editor = getComponentManager().getComponent("screenshoteditor");
+		editor.putOnScope(s,"euscreenxlpreview", "show()");
+	}
+	
 	private String setEdnaMapping(String screenshot) {
 		if (!wantedna) {
 			screenshot = screenshot.replace("edna/", "");
@@ -873,6 +951,28 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			}
 		}
 		return screenshot;
+	}
+	
+	private String getShotsFormat(int seconds) {
+		String result = null;
+		int sec = 0;
+		int hourSecs = 3600;
+		int minSecs = 60;
+		int hours = 0;
+		int minutes = 0;
+		while (seconds >= hourSecs) {
+			hours++;
+			seconds -= hourSecs;
+		}
+		while (seconds >= minSecs) {
+			minutes++;
+			seconds -= minSecs;
+		}
+		sec = new Double(seconds).intValue();
+		result = "h/" + hours;
+		result += "/m/" + minutes ;
+		result += "/sec" + sec + ".jpg";
+		return result;
 	}
 	
 

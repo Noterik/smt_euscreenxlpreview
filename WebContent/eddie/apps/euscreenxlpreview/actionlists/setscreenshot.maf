@@ -1,0 +1,2 @@
+log(set screenshot action)
+callServer(setscreenshot,screen,content)

@@ -1,4 +1,4 @@
-var Itempage = function(options){
+var Screenshoteditor = function(options){
 	var self = {};
 	var settings = {
 	}
@@ -15,10 +15,10 @@ var Itempage = function(options){
 			for(i=0;i<command.length;i++){
 				switch(command[i]) { 
 					case 'show':
-						$('#itempage').css('display','inline');
+						$('#screenshoteditor').css('display','inline');
 						break;
 					case 'close':
-						$('#itempage').css('display','none');
+						$('#screenshoteditor').css('display','none');
 						break;
 				}
 			}
