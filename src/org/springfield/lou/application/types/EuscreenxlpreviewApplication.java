@@ -809,6 +809,8 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		return body;
 	}
 	
+	
+	
 	/*
 	 * generate the technical panel
 	 */
@@ -880,10 +882,10 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 				body += "<div id=\"screenshotlabel\">SELECTED MEDIA THUMBNAIL</div>";
 				screenshot = setEdnaMapping(screenshot);
 				if (allowed) {
-					body +="<div onmouseup=\"eddie.putLou('','openscreenshoteditor("+videonode.getId()+")');\"><img id=\"screenshot\" src=\""+screenshot+"\" /></div>";
+					body +="<div id=\"screenshotdiv\" onmouseup=\"eddie.putLou('','openscreenshoteditor("+videonode.getId()+")');\"><img id=\"screenshot\" src=\""+screenshot+"\" /></div>";
 					body += "<div onmouseup=\"eddie.putLou('','openscreenshoteditor("+videonode.getId()+")');\" id=\"screenshoteditlink\">Select different thumbnail</div>";
 				} else {
-					body +="<div><img id=\"screenshot\" src=\""+screenshot+"\" /></div>";
+					body +="<div id=\"screenshotdiv\"><img id=\"screenshot\" src=\""+screenshot+"\" /></div>";
 				}
 			}
 			
@@ -897,6 +899,36 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	
 	public void setscreenshot(Screen s,String content) {
 		log("setscreenshot "+content);
+		String[] params = content.split(",");
+		try {
+			if (params.length==2) {
+				String id = params[0];
+				int seconds = Integer.parseInt(params[1]);
+				String uri = "/domain/euscreenxl/user/*/*"; // does this make sense, new way of mapping (daniel)
+				FSList fslist = FSListManager.get(uri);
+				List<FsNode> nodes = fslist.getNodesFiltered(id.toLowerCase()); // find the item
+				if (nodes!=null && nodes.size()>0) {
+					FsNode videonode = (FsNode)nodes.get(0);
+					String screenshot = videonode.getProperty("screenshot");
+					if (screenshot!=null) {
+						int pos = screenshot.indexOf("/shots/");
+						if (pos!=-1) {
+							int mod = 0;
+							String newurl = screenshot.substring(0,pos)+"/shots/1/"+ getShotsFormat(seconds);
+							String path = videonode.getPath();
+							log("BASE="+newurl+" S="+seconds);
+							log(path);
+							Fs.setProperty(path,"screenshot", newurl);
+							// lets also change it maggie memory
+							videonode.setProperty("screenshot", newurl);
+							setContentOnScope(s,"screenshotdiv","<img id=\"screenshot\" src=\""+setEdnaMapping(newurl)+"\" />");	
+						}
+					}
+				}
+			}
+		} catch(Exception e) {
+			
+		}
 		setContentOnScope(s,"screenshoteditor","");
 		ComponentInterface editor = getComponentManager().getComponent("screenshoteditor");
 		editor.putOnScope(s,"euscreenxlpreview", "close()");
@@ -974,6 +1006,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		result += "/sec" + sec + ".jpg";
 		return result;
 	}
+	
 	
 
 }
