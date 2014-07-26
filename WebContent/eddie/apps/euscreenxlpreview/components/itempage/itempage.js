@@ -20,6 +20,21 @@ var Itempage = function(options){
 					case 'close':
 						$('#itempage').css('display','none');
 						break;
+					case 'borderorange':
+						$('#video1').css('border','4px ridge #ff8888');
+						break;
+					case 'borderred':
+						$('#video1').css('border','4px ridge #ff0000');
+						break;
+					case 'borderwhite':
+						$('#video1').css('border','4px ridge #ffffff');
+						break;
+					case 'borderblue':
+						$('#video1').css('border','4px ridge #4444ff');
+						break;
+					case 'borderyellow':
+						$('#video1').css('border','4px ridge #ffe63e');
+						break;
 				}
 			}
 		}

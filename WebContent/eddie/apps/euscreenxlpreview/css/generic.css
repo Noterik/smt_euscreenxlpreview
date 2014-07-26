@@ -313,10 +313,11 @@ hr {
 
 #video1 {
 	position:absolute;
-	left: 4%;
-	right: 4%;
+	left: 3%;
+	right: 5%;
 	top: 18px;
 	width: 94%;
+	border: 4px ridge #000000;
 }
 
 #audio1 {
@@ -477,6 +478,45 @@ hr {
 	right: 5%;
 	width: 90%;
 	border: 4px ridge #ffffff;
+	-webkit-transition: all 0.4s ease;
+	-moz-transition: all 0.4s ease;
+	-o-transition: all 0.4s ease;
+	transition: all 0.4s ease;
+}
+
+.itemimg_red {
+	position:relative;
+	top: 0px;
+	left: 5%;
+	right: 5%;
+	width: 90%;
+	border: 4px ridge #ff0000;
+	-webkit-transition: all 0.4s ease;
+	-moz-transition: all 0.4s ease;
+	-o-transition: all 0.4s ease;
+	transition: all 0.4s ease;
+}
+
+.itemimg_yellow {
+	position:relative;
+	top: 0px;
+	left: 5%;
+	right: 5%;
+	width: 90%;
+	border: 4px ridge #ffe63e;
+	-webkit-transition: all 0.4s ease;
+	-moz-transition: all 0.4s ease;
+	-o-transition: all 0.4s ease;
+	transition: all 0.4s ease;
+}
+
+.itemimg_blue {
+	position:relative;
+	top: 0px;
+	left: 5%;
+	right: 5%;
+	width: 90%;
+	border: 4px ridge #00ffff;
 	-webkit-transition: all 0.4s ease;
 	-moz-transition: all 0.4s ease;
 	-o-transition: all 0.4s ease;

@@ -399,7 +399,16 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 				// if we have a screenshot if so display it if not not show i fixed image.
 				if (screenshot!=null && !screenshot.equals("")) {
 					screenshot = setEdnaMapping(screenshot);
-					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+					String publicstate = n.getProperty("public");
+					String selclass = "itemimg";
+					if (publicstate==null || publicstate.equals("")) {
+						selclass = "itemimg_yellow";
+					} else if (publicstate.equals("true")) {
+						selclass = "itemimg";
+					} else  if (publicstate.equals("false")) {
+						selclass = "itemimg_red";
+					}
+					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\""+selclass+"\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				} else {
 					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itempimg\" width=\"320\" src=\"http://images1.noterik.com/nothumb.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				}
@@ -699,10 +708,10 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		setDataSourceOptions(s,"all",nodes);
 	}
 	
-	private String getItemCommands(Screen s,String path) {
+	private String getItemCommands(Screen s,String path,String id) {
 		String body = "<div id=\"mediaactionlabel\">MEDIA ACTIONS</div>";
-		body += "<div id=\"approvemedia\">Approve this media</div>";
-		body += "<div id=\"disapprovemedia\">Reject media</div>";
+		body += "<div onmouseup=\"eddie.putLou('','approvemedia("+id+")');\" id=\"approvemedia\">Approve this media</div>";
+		body += "<div onmouseup=\"eddie.putLou('','disapprovemedia("+id+")');\" id=\"disapprovemedia\">Reject media</div>";
 		body += "<div id=\"approvemedianext\">Approve media and next</div>";
 		body += "<div id=\"disapprovemedianext\">Reject media and next</div>";
 		return body;
@@ -850,6 +859,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	}
 	
 	private void showVideoPreview(Screen s,String path) {
+		
 		// its a video object so lets load and send the video tag to the screens.
 		String body="<video id=\"video1\" autoplay controls preload=\"none\" data-setup=\"{}\">";
 
@@ -869,11 +879,12 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		} else {
 			// missing video
 		}
-
+		
 		// if its a video we need its rawvideo node for where the file is.
 		FsNode videonode = Fs.getNode(path);
+		String publicstate =null;
 		if (videonode!=null) {
-			System.out.println("RR="+videonode.asXML());		
+			publicstate = videonode.getProperty("public");
 			boolean allowed = s.checkNodeActions(videonode, "read");
 			allowed = true;
 			// nice lets set the preview image
@@ -890,12 +901,51 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			}
 			
 			if (allowed) {
-				body += getItemCommands(s,path);
+				body += getItemCommands(s,path,videonode.getId());
 			}
 		}
 		
-		setContentOnScope(s,"itempageleft",body);	
+		setContentOnScope(s,"itempageleft",body);
+		setVideoBorder(s,publicstate);
 	}
+	
+	private void setVideoBorder(Screen s,String publicstate) {
+		ComponentInterface itempage = getComponentManager().getComponent("itempage");
+		if (publicstate==null || publicstate.equals("")) {
+			itempage.putOnScope(s,"euscreenxlpreview", "borderyellow()");
+		} else if (publicstate.equals("true")) {
+			itempage.putOnScope(s,"euscreenxlpreview", "borderwhite()");
+		} else  if (publicstate.equals("false")) {
+			itempage.putOnScope(s,"euscreenxlpreview", "borderred()");
+		}
+	}
+	
+	public void approvemedia(Screen s,String id) {
+		System.out.println("ID="+id);
+		String uri = "/domain/euscreenxl/user/*/*"; // does this make sense, new way of mapping (daniel)
+		FSList fslist = FSListManager.get(uri);
+		List<FsNode> nodes = fslist.getNodesFiltered(id.toLowerCase()); // find the item
+		if (nodes!=null && nodes.size()>0) {
+			FsNode node = (FsNode)nodes.get(0);
+			System.out.println("N="+node.getPath());
+			Fs.setProperty(node.getPath(),"public","true");
+			node.setProperty("public","true");	
+			setVideoBorder(s,"true");
+		}
+	}
+	
+	public void disapprovemedia(Screen s,String id) {
+		String uri = "/domain/euscreenxl/user/*/*"; // does this make sense, new way of mapping (daniel)
+		FSList fslist = FSListManager.get(uri);
+		List<FsNode> nodes = fslist.getNodesFiltered(id.toLowerCase()); // find the item
+		if (nodes!=null && nodes.size()>0) {
+			FsNode node = (FsNode)nodes.get(0);
+			Fs.setProperty(node.getPath(),"public","false");
+			node.setProperty("public","false");	
+			setVideoBorder(s,"false");
+		}
+	}
+
 	
 	public void setscreenshot(Screen s,String content) {
 		log("setscreenshot "+content);
