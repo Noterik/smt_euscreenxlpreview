@@ -95,6 +95,16 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	 * open command is called from the putOnScreen, so open a itempage and fill it
 	 */
 	public void open(Screen s,String content) {
+		// hack to test proxy interface
+//		ServiceInterface lou = ServiceManager.getService("lou","10.88.8.224");
+		ServiceInterface lou = ServiceManager.getService("lou","10.88.8.35");
+
+		if (lou!=null) {
+			String xml = "<fsxml><properties><remoteserver>10.88.8.224</remoteserver><password>test></password></properties></fsxml>";
+			String result = lou.get("test()",xml,"text/xml");
+			System.out.println("LOU REMOTE="+result);
+		}
+		
 		// command looks like 'video,/domain/../..' so lets split them
 		String[] params=content.split(",");
 		String type = params[0];
