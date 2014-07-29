@@ -778,8 +778,8 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		List<FsNode> searchnodes = (List<FsNode>)s.getProperty("searchnodes");
 		
 		String body = "<div id=\"mediaactionlabel\">MEDIA ACTIONS</div>";
-		body += "<div onmouseup=\"eddie.putLou('','approvemedia("+id+")');\" id=\"approvemedia\">Approve this media</div>";
-		body += "<div onmouseup=\"eddie.putLou('','disapprovemedia("+id+")');\" id=\"disapprovemedia\">Reject media</div>";
+		body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"return components.itempage.approvemedia('"+id+"')\" id=\"approvemedia\">Approve this media<div id=\"approvemedia_animoverlay\"></div></div>";
+		body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"return components.itempage.disapprovemedia('"+id+"')\" id=\"disapprovemedia\">Reject media<div id=\"disapprovemedia_animoverlay\"></div></div>";
 
 		if (searchnodes!=null) {
 			for(Iterator<FsNode> iter = searchnodes.iterator() ; iter.hasNext(); ) {
@@ -789,8 +789,8 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 					// nice we found it, is there still a next one ?
 					if (iter.hasNext()) {
 						n = (FsNode)iter.next(); // this should be out next id for the link !
-						body += "<div onmouseup=\"eddie.putLou('','approvemedianext("+id+","+n.getId()+")');\" id=\"approvemedianext\">Approve media and next</div>";
-						body += "<div onmouseup=\"eddie.putLou('','disapprovemedianext("+id+","+n.getId()+")');\" id=\"disapprovemedianext\">Reject media and next</div>";
+						body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"return components.itempage.approvemedianext('"+id+","+n.getId()+"')\" id=\"approvemedianext\">Approve media and next<div id=\"approvemedianext_animoverlay\"></div></div>";
+						body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"return components.itempage.disapprovemedianext('"+id+","+n.getId()+"')\" id=\"disapprovemedianext\">Reject media and next<div id=\"disapprovemedianext_animoverlay\"></div></div>";
 					}
 				}
 			}
@@ -968,7 +968,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		if (videonode!=null) {
 			publicstate = videonode.getProperty("public");
 			boolean allowed = s.checkNodeActions(videonode, "read");
-			allowed = true;
+			//allowed = true;
 			// nice lets set the preview image
 			String screenshot  = videonode.getProperty("screenshot");
 			if (screenshot!=null && !screenshot.equals("")) {
@@ -981,7 +981,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 					body +="<div id=\"screenshotdiv\"><img id=\"screenshot\" src=\""+screenshot+"\" /></div>";
 				}
 			}
-			
+			body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreenxl.eu/item.html?id="+videonode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";
 			if (allowed) {
 				body += getItemCommands(s,path,videonode.getId());
 			}

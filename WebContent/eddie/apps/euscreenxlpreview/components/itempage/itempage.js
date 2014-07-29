@@ -3,6 +3,8 @@ var Itempage = function(options){
 	var settings = {
 	}
 	
+	var proceed = false;
+	
 	$.extend(settings, options);
 	
 		self.putMsg = function(msg) {
@@ -38,6 +40,82 @@ var Itempage = function(options){
 				}
 			}
 		}
+		
+	self.approvemedia = function(id) {
+		$('#approvemedia_animoverlay').css('opacity','0.5');
+		$('#approvemedia_animoverlay').css('width','0%');
+		$('#approvemedia_animoverlay').animate({width:'100%'},1200,function() { self.approvemediaDone(id); });
+		proceed = true;
+    }
+    
+   	self.disapprovemedia = function(id) {
+		$('#disapprovemedia_animoverlay').css('opacity','0.5');
+		$('#disapprovemedia_animoverlay').css('width','0%');
+		$('#disapprovemedia_animoverlay').animate({width:'100%'},1200,function() { self.disapprovemediaDone(id); });
+ 		proceed = true;
+    }
+    
+	self.approvemedianext = function(id,nextid) {
+		$('#approvemedianext_animoverlay').css('opacity','0.5');
+		$('#approvemedianext_animoverlay').css('width','0%');
+		$('#approvemedianext_animoverlay').animate({width:'100%'},1200,function() { self.approvemedianextDone(id,nextid); });
+		proceed = true;
+    }
+    
+   	self.disapprovemedianext = function(id,nextid) {
+		$('#disapprovemedianext_animoverlay').css('opacity','0.5');
+		$('#disapprovemedianext_animoverlay').css('width','0%');
+		$('#disapprovemedianext_animoverlay').animate({width:'100%'},1200,function() { self.disapprovemedianextDone(id,nextid); });
+ 		proceed = true;
+    }
+    
+    self.approvemediaDone = function(id) {
+		$('#approvemedia_animoverlay').css('opacity','0');
+		$('#approvemedia_animoverlay').css('width','0%');
+		if (proceed) {
+			eddie.putLou('','approvemedia('+id+')');
+			proceed = false;
+		}
+    }
+    
+    self.approvemedianextDone = function(id,nextid) {
+		$('#approvemedianext_animoverlay').css('opacity','0');
+		$('#approvemedianext_animoverlay').css('width','0%');
+		if (proceed) {
+			eddie.putLou('','approvemedianext('+id+','+nextid+')');
+			proceed = false;
+		}
+    }
+    
+      self.disapprovemediaDone = function(id) {
+		$('#disapprovemedia_animoverlay').css('opacity','0');
+		$('#disapprovemedia_animoverlay').css('width','0%');
+		if (proceed) {
+			eddie.putLou('','disapprovemedia('+id+')');
+			proceed = false;
+		}
+    }
+    
+    self.disapprovemedianextDone = function(id,nextid) {
+		$('#disapprovemedianext_animoverlay').css('opacity','0');
+		$('#disapprovemedianext_animoverlay').css('width','0%');
+		if (proceed) {
+			eddie.putLou('','disapprovemedianext('+id+','+nextid+')');
+			proceed = false;
+		}
+    }
+		
+    self.stopAnim = function() {
+		$('#approvemedia_animoverlay').css('opacity','0');
+		$('#approvemedia_animoverlay').css('width','0%');
+		$('#disapprovemedia_animoverlay').css('opacity','0');
+		$('#disapprovemedia_animoverlay').css('width','0%');
+		$('#approvemedianext_animoverlay').css('opacity','0');
+		$('#approvemedianext_animoverlay').css('width','0%');
+		$('#disapprovemedianext_animoverlay').css('opacity','0');
+		$('#disapprovemedianext_animoverlay').css('width','0%');
+		proceed = false;
+    }		
 		
 	return self;
 }
