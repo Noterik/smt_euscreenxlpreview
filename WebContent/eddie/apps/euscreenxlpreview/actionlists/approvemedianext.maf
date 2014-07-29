@@ -1,0 +1,2 @@
+log(approve media next)
+callServer(approvemedianext,screen,content)

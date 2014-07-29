@@ -34,6 +34,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.*;
 
+import org.springfield.lou.application.ApplicationManager;
 import org.springfield.lou.application.Html5Application;
 import org.springfield.lou.application.Html5ApplicationInterface;
 import org.springfield.lou.application.components.BasicComponent;
@@ -72,8 +73,8 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		super.onNewScreen(s); // needs to be called to make sure actionlist is called
 		
 		// since we are new lets tell all the others in the same scope we joined
-		ComponentInterface notification = getComponentManager().getComponent("notification");
-		notification.putOnScope(s,"euscreenxlpreview", "show(new viewer joined shared screen "+s.getShortId()+")");
+		//ComponentInterface notification = getComponentManager().getComponent("notification");
+		//notification.putOnScope(s,"euscreenxlpreview", "show(new viewer joined shared screen "+s.getShortId()+")");
 		// now that the init is done we have a 'running' connection to screen and commands can be send both ways.
 
 	}
@@ -97,13 +98,20 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	public void open(Screen s,String content) {
 		// hack to test proxy interface
 //		ServiceInterface lou = ServiceManager.getService("lou","10.88.8.224");
+		/*
 		ServiceInterface lou = ServiceManager.getService("lou","10.88.8.35");
 
 		if (lou!=null) {
 			String xml = "<fsxml><properties><remoteserver>10.88.8.224</remoteserver><password>test></password></properties></fsxml>";
-			String result = lou.get("test()",xml,"text/xml");
-			System.out.println("LOU REMOTE="+result);
+			String result = lou.get("getAppWAR(euscreenxlhome,24-Jul-2014-14:18)",xml,"text/xml");
+			if (result!=null) {
+				System.out.println("LOU REMOTE="+result.length());
+				ApplicationManager.writeApplicationWarFromString("euscreenxlhome","24-Jul-2014-14:18",result);
+			} else {
+				System.out.println("LOU REMOTE NULL");
+			}
 		}
+		*/
 		
 		// command looks like 'video,/domain/../..' so lets split them
 		String[] params=content.split(",");
@@ -112,7 +120,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		
 		// lets send all the screens on this scope a message we opened a itempage for fun
 		ComponentInterface notification = getComponentManager().getComponent("notification");
-		notification.putOnScope(s,"euscreenxlpreview", "show(user "+s.getShortId()+" opened "+path.substring(path.lastIndexOf("/"))+")");
+		//notification.putOnScope(s,"euscreenxlpreview", "show(user "+s.getShortId()+" opened "+path.substring(path.lastIndexOf("/"))+")");
         notification.putOnScope(s,"euscreenxlpreview", "setbrowser(/itempage.html?ID="+path.substring(path.lastIndexOf("/")+1)+")");
 
 		// We might want to display different things depending on type so we need to
@@ -242,7 +250,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 
 		// lets tell the users that we closed the itempage
 		ComponentInterface notification = getComponentManager().getComponent("notification");
-		notification.putOnScope(s,"euscreenxlpreview", "show(user "+s.getShortId()+" closed the itempage)");
+		//notification.putOnScope(s,"euscreenxlpreview", "show(user "+s.getShortId()+" closed the itempage)");
 	    notification.putOnScope(s,"euscreenxlpreview", "setbrowser(/)");
 
 	}
@@ -340,6 +348,13 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		// filter 4 datasource
 		setDataSourceOptions(s,sp.datasource,nodes); // divide what is left in datasource and diplay them
 		if (!sp.datasource.equals("all")) nodes = setDataSourceFilter(nodes,sp.datasource); // filter on datasource
+	
+		// filter 5 itemstate
+		setItemStateOptions(s,sp.itemstate,nodes); // divide what is left in itemstate and diplay them
+		if (!sp.itemstate.equals("all")) nodes = setItemStateFilter(nodes,sp.itemstate); // filter on itemstate
+		
+		// lets store this in the screen object for possible use on the 'next page'
+		s.setProperty("searchnodes", nodes);
 		
 		// only thing left after all the searching, sorting and giving the users feedback on
 		// all the possible results if they would have just picked it we wnow finally create the html
@@ -585,6 +600,28 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	}
 	
 	/*
+	 * simple filter based on datasource
+	 */
+	private List<FsNode> setItemStateFilter(List<FsNode> nodes,String itemstate) {
+		List<FsNode> results = new ArrayList<FsNode>();
+		for(Iterator<FsNode> iter = nodes.iterator() ; iter.hasNext(); ) {
+			FsNode n = (FsNode)iter.next();	
+			
+			String ds= n.getProperty("public");
+			if (ds!=null) {
+				if (ds.equals(itemstate)) {
+					results.add(n);
+				}
+			} else {
+				if (itemstate.equals("unassigned")) {
+					results.add(n);
+				}
+			}
+		}
+		return results;
+	}
+	
+	/*
 	 * simple filter based on mediatype 
 	 */
 	private List<FsNode> setMtypeFilter(List<FsNode> nodes,String mtype) {
@@ -664,6 +701,23 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	}
 	
 	/*
+	 * update the screen's itemstate element
+	 */
+	private void setItemStateOptions(Screen s,String itemstate, List<FsNode>nodes) {
+		FSSets sets = new FSSets(nodes,"public",true);
+		String body = "<select id=\"searchinput_datasource\" onchange=\"components.searchinput.setDataSource(this.options[this.selectedIndex].value)\">";
+		if (!itemstate.equals("all")) body += "<option value=\""+itemstate+"\">"+itemstate+" ("+sets.getSetSize(itemstate)+")</option>";
+		body += "<option value=\"all\">all ("+nodes.size()+")</option>";
+		for (Iterator<String> iter = sets.getKeys() ; iter.hasNext(); ) {
+			String dname = iter.next();	
+			int size = sets.getSetSize(dname);
+			body += "<option value=\""+dname+"\">"+dname+" ("+size+")</option>";
+		}
+		body +="</select>";
+		setContentOnScope(s,"searchinput_itemstate", body);
+	}
+	
+	/*
 	 * update the screen's mediatype element
 	 */
 	private void setMtypeOptions(Screen s,String mtype, List<FsNode>nodes) {
@@ -716,14 +770,31 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		setMtypeOptions(s,"all",nodes);
 		setDecadeOptions(s,"all",nodes);
 		setDataSourceOptions(s,"all",nodes);
+		setItemStateOptions(s,"all",nodes);
 	}
 	
 	private String getItemCommands(Screen s,String path,String id) {
+		// lets store this in the screen object for possible use on the 'next page'
+		List<FsNode> searchnodes = (List<FsNode>)s.getProperty("searchnodes");
+		
 		String body = "<div id=\"mediaactionlabel\">MEDIA ACTIONS</div>";
 		body += "<div onmouseup=\"eddie.putLou('','approvemedia("+id+")');\" id=\"approvemedia\">Approve this media</div>";
 		body += "<div onmouseup=\"eddie.putLou('','disapprovemedia("+id+")');\" id=\"disapprovemedia\">Reject media</div>";
-		body += "<div id=\"approvemedianext\">Approve media and next</div>";
-		body += "<div id=\"disapprovemedianext\">Reject media and next</div>";
+
+		if (searchnodes!=null) {
+			for(Iterator<FsNode> iter = searchnodes.iterator() ; iter.hasNext(); ) {
+				// get the next node
+				FsNode n = (FsNode)iter.next();	
+				if (n.getId().equals(id)) {
+					// nice we found it, is there still a next one ?
+					if (iter.hasNext()) {
+						n = (FsNode)iter.next(); // this should be out next id for the link !
+						body += "<div onmouseup=\"eddie.putLou('','approvemedianext("+id+","+n.getId()+")');\" id=\"approvemedianext\">Approve media and next</div>";
+						body += "<div onmouseup=\"eddie.putLou('','disapprovemedianext("+id+","+n.getId()+")');\" id=\"disapprovemedianext\">Reject media and next</div>";
+					}
+				}
+			}
+		}
 		return body;
 	}
 	
@@ -869,6 +940,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	}
 	
 	private void showVideoPreview(Screen s,String path) {
+	
 		
 		// its a video object so lets load and send the video tag to the screens.
 		String body="<video id=\"video1\" autoplay controls preload=\"none\" data-setup=\"{}\">";
@@ -937,10 +1009,34 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		List<FsNode> nodes = fslist.getNodesFiltered(id.toLowerCase()); // find the item
 		if (nodes!=null && nodes.size()>0) {
 			FsNode node = (FsNode)nodes.get(0);
-			System.out.println("N="+node.getPath());
 			Fs.setProperty(node.getPath(),"public","true");
 			node.setProperty("public","true");	
 			setVideoBorder(s,"true");
+		}
+	}
+	
+	public void approvemedianext(Screen s,String content) {
+		String[] params = content.split(",");
+		String id = params[0];
+		String nextid  = params[1];
+		
+		String uri = "/domain/euscreenxl/user/*/*"; // does this make sense, new way of mapping (daniel)
+		FSList fslist = FSListManager.get(uri);
+		List<FsNode> nodes = fslist.getNodesFiltered(id.toLowerCase()); // find the item
+		if (nodes!=null && nodes.size()>0) {
+			FsNode node = (FsNode)nodes.get(0);
+			Fs.setProperty(node.getPath(),"public","true");
+			node.setProperty("public","true");	
+			setVideoBorder(s,"true");
+		}
+		
+		nodes = fslist.getNodesFiltered(nextid.toLowerCase()); // find the item
+		if (nodes!=null && nodes.size()>0) {
+			FsNode node = (FsNode)nodes.get(0);
+			String type=node.getName();
+			String path=node.getPath();
+			//System.out.println("TYPE="+type+" PATH="+path);
+			open(s,type+","+path); // kinda ugly but o well.
 		}
 	}
 	
@@ -953,6 +1049,31 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			Fs.setProperty(node.getPath(),"public","false");
 			node.setProperty("public","false");	
 			setVideoBorder(s,"false");
+		}
+		
+	}
+	
+	public void disapprovemedianext(Screen s,String content) {
+		String[] params = content.split(",");
+		String id = params[0];
+		String nextid  = params[1];
+		
+		String uri = "/domain/euscreenxl/user/*/*"; // does this make sense, new way of mapping (daniel)
+		FSList fslist = FSListManager.get(uri);
+		List<FsNode> nodes = fslist.getNodesFiltered(id.toLowerCase()); // find the item
+		if (nodes!=null && nodes.size()>0) {
+			FsNode node = (FsNode)nodes.get(0);
+			Fs.setProperty(node.getPath(),"public","false");
+			node.setProperty("public","false");	
+			setVideoBorder(s,"false");
+		}
+		
+		nodes = fslist.getNodesFiltered(nextid.toLowerCase()); // find the item
+		if (nodes!=null && nodes.size()>0) {
+			FsNode node = (FsNode)nodes.get(0);
+			String type=node.getName();
+			String path=node.getPath();
+			open(s,type+","+path); // kinda ugly but o well.
 		}
 	}
 

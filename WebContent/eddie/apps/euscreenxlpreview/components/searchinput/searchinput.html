@@ -46,6 +46,16 @@
 </div>
 
 <div class="form-group">
+	<label for="itemstate">ITEM PUBLIC</label>
+	<div class="select-wrap">
+		<select id="searchinput_itemstate" onchange="components.searchinput.setItemState(this.options[this.selectedIndex].value)">
+ 			<option value="all">..loading</option>
+		</select>
+	</div>
+	<div class="icon-chevron-down"></div>
+</div>
+
+<div class="form-group">
 	<label for="maxdiplay">MAX DISPLAY</label>
 	<div class="select-wrap">
 		<select id="searchinput_maxdisplay" onchange="components.searchinput.setMaxDisplay(this.options[this.selectedIndex].value)">

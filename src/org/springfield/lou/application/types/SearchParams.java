@@ -35,6 +35,7 @@ public class SearchParams {
 	public String mtype = "all";
 	public String sortdirection = "up";
 	public String decade = "all";
+	public String itemstate = "all";
 	public String searchkey ="*";
 	public int maxdisplay = 10000;
 
@@ -65,6 +66,8 @@ public class SearchParams {
 							maxdisplay = Integer.parseInt(node.getText());
 						} else if (name.equals("datasource")) {
 							datasource = node.getText();
+						} else if (name.equals("itemstate")) {
+							itemstate = node.getText();
 						}
 					}
 				}

@@ -27,6 +27,7 @@ var Searchinput = function(options){
 	var provider = "all";
 	var mtype = "all";
 	var datasource = "all";
+	var itemstate = "all";
 	var decade = "all";
 	var sortfield = "id";
 	var sortdirection = "up";
@@ -62,6 +63,11 @@ var Searchinput = function(options){
 		eddie.putLou('','postparameters('+getParamBody()+')');
     }
     
+    self.setItemState = function(is) {
+		itemstate = is;
+		eddie.putLou('','postparameters('+getParamBody()+')');
+    }
+    
 	self.setSortField = function(sf) {
 		sortfield = sf;
 		eddie.putLou('','postparameters('+getParamBody()+')');
@@ -87,6 +93,7 @@ var Searchinput = function(options){
         body += '<sortfield>'+sortfield+'</sortfield>';
         body += '<sortdirection>'+sortdirection+'</sortdirection>';
         body += '<decade>'+decade+'</decade>';
+        body += '<itemstate>'+itemstate+'</itemstate>';
     	body += '<searchkey>'+$('#searchinput_searchkey').val()+'</searchkey>';
     	body += '</properties></parameters>';
     	return body;
