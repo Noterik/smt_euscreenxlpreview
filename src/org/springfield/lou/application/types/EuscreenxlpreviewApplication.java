@@ -96,23 +96,6 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	 * open command is called from the putOnScreen, so open a itempage and fill it
 	 */
 	public void open(Screen s,String content) {
-		// hack to test proxy interface
-//		ServiceInterface lou = ServiceManager.getService("lou","10.88.8.224");
-		/*
-		ServiceInterface lou = ServiceManager.getService("lou","10.88.8.35");
-
-		if (lou!=null) {
-			String xml = "<fsxml><properties><remoteserver>10.88.8.224</remoteserver><password>test></password></properties></fsxml>";
-			String result = lou.get("getAppWAR(euscreenxlhome,24-Jul-2014-14:18)",xml,"text/xml");
-			if (result!=null) {
-				System.out.println("LOU REMOTE="+result.length());
-				ApplicationManager.writeApplicationWarFromString("euscreenxlhome","24-Jul-2014-14:18",result);
-			} else {
-				System.out.println("LOU REMOTE NULL");
-			}
-		}
-		*/
-		
 		// command looks like 'video,/domain/../..' so lets split them
 		String[] params=content.split(",");
 		String type = params[0];
@@ -854,6 +837,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	 * generate the overview panel 
 	 */
 	private String getOverviewPanel(FsNode node) {
+		System.out.println("TITLE="+node.getProperty("TitleSet_TitleSetInEnglish_title"));
 		String body="<tr><td>English Title<hr></td><th>"+node.getProperty("TitleSet_TitleSetInEnglish_title")+"<hr></th></tr>";
 		body+="<tr><td>Clip Title<hr></td><th>"+node.getProperty("clipTitle")+"<hr></th></tr>";
 		body+="<tr><td>Genre<hr></td><th>"+node.getProperty("genre")+"<hr></th></tr>";
@@ -950,13 +934,17 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		FsNode rawvideonode = Fs.getNode(path+"/rawvideo/1");
 		if (rawvideonode!=null) {
 			String mounts[] = rawvideonode.getProperty("mount").split(",");
-		
+
 			// based on the type of mount (path) create the rest of the video tag.
 			String mount = mounts[0];
-			if (mount.indexOf("http://")==-1) {
+			if (mount.indexOf("http://")==-1 && mount.indexOf("rtmp://")==-1) {
 				String ap = "http://"+mount+".noterik.com/progressive/"+mount+path+"/rawvideo/1/raw.mp4";
 				body+="<source src=\""+ap+"\" type=\"video/mp4\" /></video>";
 			} else {
+				if (mount.indexOf("apasfw.apa.at/EUScreen/")!=-1) { // temp hack for ORF until uter is fixed
+					FsNode videonode = Fs.getNode(path);
+					mount="http://euscreen.orf.at/content/"+videonode.getProperty("filename");
+				}
 				body+="<source src=\""+mount+"\" type=\"video/mp4\" /></video>";
 			}
 		} else {
@@ -982,7 +970,11 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 					body +="<div id=\"screenshotdiv\"><img id=\"screenshot\" src=\""+screenshot+"\" /></div>";
 				}
 			}
-			body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreenxl.eu/item.html?id="+videonode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";
+			if (LazyHomer.inDeveloperMode()) {
+				body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreenxl.eu/item.html?id="+videonode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";
+			} else {
+				body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreen.eu/item.html?id="+videonode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";				
+			}
 			if (allowed) {
 				body += getItemCommands(s,path,videonode.getId());
 			}
