@@ -23,6 +23,8 @@ package org.springfield.lou.application.types;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -46,11 +48,11 @@ import org.springfield.lou.screen.Screen;
 import org.springfield.mojo.interfaces.ServiceInterface;
 import org.springfield.mojo.interfaces.ServiceManager;
 
-
 public class EuscreenxlpreviewApplication extends Html5Application implements MargeObserver {
 	
 	private static Boolean cached = false;
 	private static Boolean wantedna = true;
+	
 	private static String panels[] = { "Overview","Description","Native langauge","Copyright","Technical info","Noterik fields","Xml files"};
 
 	/*
@@ -955,6 +957,11 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 					FsNode videonode = Fs.getNode(path);
 					mount="http://euscreen.orf.at/content/"+videonode.getProperty("filename");
 				}
+				if (mount.indexOf("vrt.flash.streampower.be/")!=-1) { // hack vrt
+				//	mount = "rtmp://fmsod.rte.ie/laweb/2011/1018";
+					FsNode videonode = Fs.getNode(path);
+					mount = "http://images3.noterik.com/rafael/data/proxy/eu_vrt/"+videonode.getId()+".mp4";
+				}
 				body+="<source src=\""+mount+"\" type=\"video/mp4\" /></video>";
 			}
 		} else {
@@ -1190,6 +1197,15 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		result += "/sec" + sec + ".jpg";
 		return result;
 	}
+	
+	
+	
+	private String getProxyUrl(String source,String filename,String dest) {
+		String server = "http://images1.noterik.com/rafael/data/proxy"+dest;
+		return server;
+	}
+	
+	
 	
 	
 
