@@ -116,15 +116,25 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			String body="<audio id=\"audio1\" autoplay controls preload=\"none\" data-setup=\"{}\">";
 			FsNode rawaudionode = Fs.getNode(path+"/rawaudio/1");
 			String mount = rawaudionode.getProperty("mount");
-			String ext = rawaudionode.getProperty("extention");
+			String ext = rawaudionode.getProperty("extension");
+			String mimeType = "audio/mpeg";
+			if(ext.equalsIgnoreCase("wav")) {
+				mimeType = "audio/wav";
+			} else if(ext.equalsIgnoreCase("ogg")) {
+				mimeType = "audio/ogg";
+			}
 			if (mount.indexOf("http://")==-1) {
-				String ap = "http://"+mount+".noterik.com/"+path+"/rawaudio/1/raw."+ext;
-		        body+="<source src=\""+ap+"\" type=\"audio/mpeg\" /></audio>";
+				String ap = "http://"+mount+".noterik.com"+path+"/rawaudio/1/raw."+ext;
+		        body+="<source src=\""+ap+"\" type=\""+mimeType+"\" /></audio>";
 			} else {
-		        body+="<source src=\""+mount+"\" type=\"audio/mpeg\" /></audio>";
+		        body+="<source src=\""+mount+"\" type=\""+mimeType+"\" /></audio>";
 			}
 			// lets fill the 'itempageleft' div on all the screens in the scope with it
 			setContentOnScope(s,"itempageleft",body);	
+		} else if (type.equals("picture")) {
+			
+		} else if (type.equals("doc")) {
+			
 		}
 		
 		// the lowest panel on the item page is always the same so lets fill and
