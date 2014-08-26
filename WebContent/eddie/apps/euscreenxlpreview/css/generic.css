@@ -1019,6 +1019,10 @@ label {
   font-weight: normal;
   color: #6ba222;
 }
+.intro-text video {
+	display: block;
+	margin: 0 auto;
+}
 
 #portalbutton {
   position: absolute;
