@@ -28,11 +28,9 @@ var Searchoutput = function(options){
 		 e.preventDefault();
          e.stopPropagation();
          var video = $(this).get(0);
-         if (video.paused === false) {
-             video.pause();
-         } else {
-             video.play();
-         }
+         
+         video.play();
+         $(this).off('click');
          return false;
 	});
 		
