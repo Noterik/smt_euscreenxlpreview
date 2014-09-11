@@ -1142,8 +1142,23 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 					String basepart = screenshot.substring(0,pos)+"/shots/1/";
 					basepart = basepart.replace("edna/","");
 					System.out.println("basepart="+basepart);
+					String itemDuration = videonode.getProperty("TechnicalInformation_itemDuration");
+					int totalsecs = 5*60; // 5 minutes by default
+					if(itemDuration!=null) {
+						String[] durArr = itemDuration.split(":");
+						int h=0,m,sec;		
+						if(durArr.length==3) { // hh:mm:ss
+							h = Integer.parseInt(durArr[0]);
+							m = Integer.parseInt(durArr[1]);
+							sec = Integer.parseInt(durArr[2]);
+						} else { //mm:ss
+							m = Integer.parseInt(durArr[0]);
+							sec = Integer.parseInt(durArr[1]);
+						}
+						totalsecs = h*3600 + m*60 + sec;
+					}
 					body += "<tr>";
-					for (int i=0;i<(5*60);i++) {
+					for (int i=0;i<totalsecs;i++) {
 						mod++;
 						String newpath = basepart + getShotsFormat(i);
 						body += "<td><div class=\"sitem\" onmouseup=\"eddie.putLou('','setscreenshot("+id+","+i+")');\"><img class=\"sitemimg\" src=\""+newpath+"\" /></div></td>";
