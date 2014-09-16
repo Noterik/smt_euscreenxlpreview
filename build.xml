@@ -60,6 +60,7 @@
 			<remoteRepository id="restlet" url="http://maven.restlet.org" />
 			<dependency groupId="log4j" artifactId="log4j" version="1.2.16"/>
 			<dependency groupId="dom4j" artifactId="dom4j" version="1.6.1"/>
+			<dependency groupId="commons-lang" artifactId="commons-lang" version="2.6"/>
 			<dependency groupId="commons-net" artifactId="commons-net" version="2.0"/>
 			<dependency groupId="commons-httpclient" artifactId="commons-httpclient" version="3.1"/>
 			<dependency groupId="jaxen" artifactId="jaxen" version="1.1.1"/>
@@ -149,9 +150,9 @@
 		</war>
 		<!-- <copyfile src="${package.location.war}" dest="/springfield/lou/uploaddir/smt_portiatestapp.war"/> -->
 		<!-- <scp file="${package.location.war}" todir="root@c3.noterik.com:/tmp" knownhosts="/Users/scb2/.ssh/known_hosts" trust="true" passphrase="" keyfile="/Users/scb2/.ssh/ntk_rsa" /> -->
-        <exec executable="/bin/bash">
+        <!-- <exec executable="/bin/bash">
         <arg value="/springfield/tomcat/bin/noterikcopy_4b.sh"/>
-        </exec>
+        </exec> -->
 	</target>
 	
 </project>

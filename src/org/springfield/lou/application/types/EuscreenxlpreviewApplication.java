@@ -31,6 +31,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.Namespace;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -855,11 +856,26 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		body+="<tr><td>Genre<hr></td><th>"+node.getProperty("genre")+"<hr></th></tr>";
 		body+="<tr><td>Topic<hr></td><th>"+node.getProperty("topic")+"<hr></th></tr>";
 		body+="<tr><td>SeriesOrCollectionTitle<hr></td><th>"+node.getProperty("TitleSet_TitleSetInEnglish_seriesOrCollectionTitle")+"<hr></th></tr>";
-		body+="<tr><td>Thesaurus terms<hr></td><th>"+node.getProperty("ThesaurusTerm")+"<hr></th></tr>";
+		String cvsValue = node.getProperty("ThesaurusTerm");
+		if(cvsValue!=null) {
+			String[] tmp = cvsValue.split(",");
+			cvsValue = StringUtils.join(tmp, ", ");
+		}
+		body+="<tr><td>Thesaurus terms<hr></td><th>"+cvsValue+"<hr></th></tr>";
 		body+="<tr><td>Production year<hr></td><th>"+node.getProperty("SpatioTemporalInformation_TemporalInformation_productionYear")+"<hr></th></tr>";
 		body+="<tr><td>Broadcast date<hr></td><th>"+node.getProperty("SpatioTemporalInformation_TemporalInformation_broadcastDate")+"<hr></th></tr>";
-		body+="<tr><td>Geographical coverage<hr></td><th>"+node.getProperty("SpatioTemporalInformation_SpatialInformation_GeographicalCoverage")+"<hr></th></tr>";
-		body+="<tr><td>Contributor<hr></td><th>"+node.getProperty("contributor")+"<hr></th></tr>";
+		cvsValue = node.getProperty("SpatioTemporalInformation_SpatialInformation_GeographicalCoverage");
+		if(cvsValue!=null) {
+			String[] tmp = cvsValue.split(",");
+			cvsValue = StringUtils.join(tmp, ", ");
+		}
+		body+="<tr><td>Geographical coverage<hr></td><th>"+cvsValue+"<hr></th></tr>";
+		cvsValue = node.getProperty("contributor");
+		if(cvsValue!=null) {
+			String[] tmp = cvsValue.split(",");
+			cvsValue = StringUtils.join(tmp, ", ");
+		}
+		body+="<tr><td>Contributor<hr></td><th>"+cvsValue+"<hr></th></tr>";
 		body+="<tr><td>Publisherbroadcaster<hr></td><th>"+node.getProperty("publisherbroadcaster")+"<hr></th></tr>";
 		body+="<tr><td>First Broadcastchannel<hr></td><th>"+node.getProperty("firstBroadcastChannel")+"<hr></th></tr>";
 		body+="<tr><td>Provider<hr></td><th>"+node.getProperty("provider")+"<hr></th></tr>";
