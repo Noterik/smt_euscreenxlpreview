@@ -23,6 +23,16 @@ var Searchoutput = function(options){
 				}
 			}
 		}
+	
+	$('.intro-text video').click(function(e){
+		 e.preventDefault();
+         e.stopPropagation();
+         var video = $(this).get(0);
+         
+         video.play();
+         $(this).off('click');
+         return false;
+	});
 		
 	return self;
 }

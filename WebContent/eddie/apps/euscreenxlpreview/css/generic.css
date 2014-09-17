@@ -137,7 +137,8 @@ hr {
 	top: 415px;
 	left: 55px;
 	font-size: 14px;
-	color: #6f9a19
+	color: #6f9a19;
+	cursor: pointer;
 }
 
 #portalpagelink {
@@ -164,7 +165,8 @@ hr {
 	top: 510px;
 	left: 55px;
 	font-size: 14px;
-	color: #6f9a19
+	color: #6f9a19;
+	cursor: pointer;
 }
 
 #disapprovemedia {
@@ -173,7 +175,8 @@ hr {
 	top: 540px;
 	left: 55px;
 	font-size: 14px;
-	color: #6f9a19
+	color: #6f9a19;
+	cursor: pointer;
 }
 
 #approvemedianext {
@@ -182,7 +185,8 @@ hr {
 	top: 570px;
 	left: 55px;
 	font-size: 14px;
-	color: #6f9a19
+	color: #6f9a19;
+	cursor: pointer;
 }
 
 #disapprovemedianext {
@@ -191,7 +195,8 @@ hr {
 	top: 600px;
 	left: 55px;
 	font-size: 14px;
-	color: #6f9a19
+	color: #6f9a19;
+	cursor: pointer;
 }
 
 
@@ -1006,7 +1011,7 @@ label {
 .intro-text {
   width: 50%;
   margin: 0 auto;
-  margin-top: 15%;
+  margin-top: 10%;
 }
 
 .intro-text p {
@@ -1018,6 +1023,10 @@ label {
 .intro-text h3 {
   font-weight: normal;
   color: #6ba222;
+}
+.intro-text video {
+	display: block;
+	margin: 0 auto;
 }
 
 #portalbutton {
