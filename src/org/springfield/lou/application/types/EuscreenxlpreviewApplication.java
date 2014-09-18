@@ -132,6 +132,27 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			} else {
 		        body+="<source src=\""+mount+"\" type=\""+mimeType+"\" /></audio>";
 			}
+			
+			FsNode audionode = Fs.getNode(path);
+			String publicstate =null;
+			if (audionode!=null) {
+				publicstate = audionode.getProperty("public");
+				boolean allowed = s.checkNodeActions(audionode, "read");
+				
+				if (LazyHomer.inDeveloperMode()) {
+					body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreenxl.eu/item.html?id="+audionode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";
+				} else {
+					body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreen.eu/item.html?id="+audionode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";				
+				}
+				if (allowed) {
+					body += getItemCommands(s,path,audionode.getId());
+					allowed = s.checkNodeActions(audionode, "write");
+					if (allowed && (publicstate==null || publicstate.equals("") || publicstate.equals("false"))) {
+						body += "<div onmouseup=\"eddie.putLou('','updateitemfromxml("+audionode.getId()+")');\" id=\"updateitemlink\">Update this media from Mint</div>";
+					}
+				}
+			}
+			
 			// lets fill the 'itempageleft' div on all the screens in the scope with it
 			setContentOnScope(s,"itempageleft",body);	
 		} else if (type.equals("picture")) {
@@ -887,9 +908,9 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	 */
 	private String getNativeLangaugePanel(FsNode node) {
 		String body="<tr><td>Original language title<hr></td><th>"+node.getProperty("TitleSet_TitleSetInOriginalLanguage_title")+"<hr></th></tr>";
+		body+="<tr><td>Original language seriesOrCollectionTitle<hr></td><th>"+node.getProperty("TitleSet_TitleSetInOriginalLanguage_seriesOrCollectionTitle")+"<hr></th></tr>";
 		body+="<tr><td>Original language<hr></td><th>"+node.getProperty("originallanguage")+"<hr></th></tr>";
 		body+="<tr><td>Original summary<hr></td><th>"+node.getProperty("summary")+"<hr></th></tr>";
-		body+="<tr><td>Original language title<hr></td><th>"+node.getProperty("TitleSet_TitleSetInOriginalLanguage_title")+"<hr></th></tr>";
 		return body;
 	}
 	
@@ -1010,6 +1031,10 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			}
 			if (allowed) {
 				body += getItemCommands(s,path,videonode.getId());
+				allowed = s.checkNodeActions(videonode, "write");
+				if (allowed && (publicstate==null || publicstate.equals("") || publicstate.equals("false"))) {
+					body += "<div onmouseup=\"eddie.putLou('','updateitemfromxml("+videonode.getId()+")');\" id=\"updateitemlink\">Update this media from Mint</div>";
+				}
 			}
 		}
 		
@@ -1193,6 +1218,25 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		setContentOnScope(s,"screenshoteditor",body);
 		ComponentInterface editor = getComponentManager().getComponent("screenshoteditor");
 		editor.putOnScope(s,"euscreenxlpreview", "show()");
+	}
+	
+	public void updateitemfromxml(Screen s, String id) {
+		System.out.println("Updateitem: "+id);
+		String uri = "/domain/euscreenxl/user/*/*"; // does this make sense, new way of mapping (daniel)
+		FSList fslist = FSListManager.get(uri);
+		List<FsNode> nodes = fslist.getNodesFiltered(id.toLowerCase()); // find the item
+		System.out.println("Updateitem: nodes size "+nodes.size());
+		if (nodes!=null && nodes.size()>0) {
+			FsNode itemnode = (FsNode)nodes.get(0);
+			ServiceInterface uter = ServiceManager.getService("uter");
+			if (uter!=null) {
+				System.out.println("Updateitem: sending request to uter.");
+				uter.put(itemnode.getPath(), null, null);
+			}else{
+				System.out.println("Updateitem: uter service is null");
+			}
+		}
+		
 	}
 	
 	private String setEdnaMapping(String screenshot) {

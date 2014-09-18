@@ -199,6 +199,15 @@ hr {
 	cursor: pointer;
 }
 
+#updateitemlink {
+	position:absolute;
+	width: 200px;
+	top: 630px;
+	left: 55px;
+	font-size: 14px;
+	color: #6f9a19;
+	cursor: pointer;	
+}
 
 #searchoutput {
 	color: #666666;
@@ -407,6 +416,10 @@ hr {
 	z-index:12;
 	padding-top: 20px;
 	padding-left: 10px;
+}
+
+#itempageunder table th {
+	word-break: break-word;
 }
 
 #backbutton {

@@ -1,0 +1,2 @@
+log(update item from xml)
+callServer(updateitemfromxml,screen,content)
