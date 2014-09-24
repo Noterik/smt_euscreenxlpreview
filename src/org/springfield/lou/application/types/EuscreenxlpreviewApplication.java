@@ -154,7 +154,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			}
 			
 			// lets fill the 'itempageleft' div on all the screens in the scope with it
-			setContentOnScope(s,"itempageleft",body);	
+			setContentOnScope(s,"itempageleft",body);
 		} else if (type.equals("picture")) {
 			
 		} else if (type.equals("doc")) {
@@ -974,10 +974,11 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	}
 	
 	private void showVideoPreview(Screen s,String path) {
-	
 		
+		//Prepare the notification box for right-click on video
+		String body = "<div id=\"copyrightBox\" style=\"display:none;\"><span class=\"dismiss\"><a title=\"dismiss this notification\">x</a></span><div>EUscreen offers thousands of items of film and television clips, photos and texts provided by audiovisual archives from all over Europe.<br/><br/>Are you interested in using a clip from our collection? Please click <a href='#'>here to contact the provider</a> of this clip and ask for the rights to reuse it.</div></div>";
 		// its a video object so lets load and send the video tag to the screens.
-		String body="<video id=\"video1\" autoplay controls preload=\"none\" data-setup=\"{}\">";
+		body+="<video id=\"video1\" autoplay controls preload=\"none\" data-setup=\"{}\">";
 
 		// if its a video we need its rawvideo node for where the file is.
 		FsNode rawvideonode = Fs.getNode(path+"/rawvideo/1");
@@ -1040,6 +1041,8 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		
 		setContentOnScope(s,"itempageleft",body);
 		setVideoBorder(s,publicstate);
+		ComponentInterface itempage = getComponentManager().getComponent("itempage");
+		itempage.putOnScope(s,"euscreenxlpreview", "copyrightvideo()");
 	}
 	
 	private void setVideoBorder(Screen s,String publicstate) {

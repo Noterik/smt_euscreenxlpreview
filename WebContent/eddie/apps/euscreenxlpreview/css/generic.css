@@ -1048,3 +1048,36 @@ label {
   right: 40px;
 }
 
+#copyrightBox {
+    position:fixed;
+    top:90px;
+    width:251px;
+    z-index:105;
+    text-align:center;
+    font-weight:normal;
+    font-size:14px;
+    color:white;
+    background-color:#CE6E93;
+    padding:5px 10px 5px 5px;
+	font-family: 'Proxima Nova', sans-serif;
+	left: 8px;
+}
+#copyrightBox div {clear:both;}
+#copyrightBox span.dismiss {
+    border:1px solid #FFF;
+    padding:0 5px;
+    cursor:pointer;
+    float:right;
+    margin-left:10px;
+    margin-bottom: 5px;
+}
+#copyrightBox span.dismiss a {
+    color:#fff;
+    text-decoration:none;
+    font-weight:bold
+}
+#copyrightBox a {
+	color:#fff;
+	text-decoration:underline;
+}
+

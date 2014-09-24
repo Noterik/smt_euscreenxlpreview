@@ -37,6 +37,15 @@ var Itempage = function(options){
 					case 'borderyellow':
 						$('#video1').css('border','4px ridge #ffe63e');
 						break;
+					case 'copyrightvideo':
+						$(".dismiss").click(function(){
+						       $("#copyrightBox").fadeOut("slow");
+						});
+						$('#video1').bind("contextmenu",function(e){
+							$("#copyrightBox").fadeIn("slow");
+							return false;
+						});
+						break;
 				}
 			}
 		}
