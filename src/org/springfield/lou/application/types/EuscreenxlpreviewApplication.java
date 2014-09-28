@@ -42,6 +42,7 @@ import org.springfield.lou.application.Html5Application;
 import org.springfield.lou.application.Html5ApplicationInterface;
 import org.springfield.lou.application.components.BasicComponent;
 import org.springfield.lou.application.components.ComponentInterface;
+import org.springfield.lou.application.types.viewers.*;
 import org.springfield.fs.*;
 import org.springfield.fs.MargeObserver;
 import org.springfield.lou.homer.*;
@@ -54,7 +55,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	private static Boolean cached = false;
 	private static Boolean wantedna = true;
 	
-	private static String panels[] = { "Overview","Description","Native langauge","Copyright","Technical info","Noterik fields","Xml files"};
+	//private static String panels[] = { "Overview","Description","Native langauge","Copyright","Technical info","Noterik fields","Xml files"};
 
 	/*
 	 * Constructor for the preview application for EUScreen providers
@@ -74,12 +75,6 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	 */
 	public void onNewScreen(Screen s) {
 		super.onNewScreen(s); // needs to be called to make sure actionlist is called
-		
-		// since we are new lets tell all the others in the same scope we joined
-		//ComponentInterface notification = getComponentManager().getComponent("notification");
-		//notification.putOnScope(s,"euscreenxlpreview", "show(new viewer joined shared screen "+s.getShortId()+")");
-		// now that the init is done we have a 'running' connection to screen and commands can be send both ways.
-
 	}
 	
 	
@@ -111,56 +106,14 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 
 		// We might want to display different things depending on type so we need to
 		// check them one by one and do what is needed.
-
-		if (type.equals("video")) {
-			showVideoPreview(s,path);
-		} else if (type.equals("audio")) {
-			// its a audio object so lets load and send the video tag to the screens.
-			String body="<audio id=\"audio1\" autoplay controls preload=\"none\" data-setup=\"{}\">";
-			FsNode rawaudionode = Fs.getNode(path+"/rawaudio/1");
-			String mount = rawaudionode.getProperty("mount");
-			String ext = rawaudionode.getProperty("extension");
-			String mimeType = "audio/mpeg";
-			if(ext.equalsIgnoreCase("wav")) {
-				mimeType = "audio/wav";
-			} else if(ext.equalsIgnoreCase("ogg")) {
-				mimeType = "audio/ogg";
-			}
-			if (mount.indexOf("http://")==-1) {
-				String ap = "http://"+mount+".noterik.com"+path+"/rawaudio/1/raw."+ext;
-		        body+="<source src=\""+ap+"\" type=\""+mimeType+"\" /></audio>";
-			} else {
-		        body+="<source src=\""+mount+"\" type=\""+mimeType+"\" /></audio>";
-			}
-			
-			FsNode audionode = Fs.getNode(path);
-			String publicstate =null;
-			if (audionode!=null) {
-				publicstate = audionode.getProperty("public");
-				boolean allowed = s.checkNodeActions(audionode, "read");
-				
-				if (LazyHomer.inDeveloperMode()) {
-					body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreenxl.eu/item.html?id="+audionode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";
-				} else {
-					body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreen.eu/item.html?id="+audionode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";				
-				}
-				if (allowed) {
-					body += getItemCommands(s,path,audionode.getId());
-					allowed = s.checkNodeActions(audionode, "write");
-					if (allowed && (publicstate==null || publicstate.equals("") || publicstate.equals("false"))) {
-						body += "<div onmouseup=\"eddie.putLou('','updateitemfromxml("+audionode.getId()+")');\" id=\"updateitemlink\">Update this media from Mint</div>";
-					}
-				}
-			}
-			
-			// lets fill the 'itempageleft' div on all the screens in the scope with it
-			setContentOnScope(s,"itempageleft",body);
-		} else if (type.equals("picture")) {
-			
-		} else if (type.equals("doc")) {
-			
+        
+		ViewerInterface handler = getViewerHander(type);
+		if (handler!=null) {
+			handler.showPreview(this,s,path);
+		} else {
+			System.out.println("NEW TYPE NOT SUPPORTED IN showPreview "+type);
 		}
-		
+
 		// the lowest panel on the item page is always the same so lets fill and
 		// put it on all the screens. lots of calls needed so put them in a method.
 		setContentOnScope(s,"itempageright",getRelatedInfoHeader(path,"Overview"));
@@ -392,11 +345,10 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			// check if we already display more then items then we want
 			//log("type="+type);
 			if (searchvalidcount<sp.maxdisplay) {
-				if (type.equals("video")) { addVideoThumb(body,n,sp); } else 
-				if (type.equals("audio")) { addAudioThumb(body,n,sp); } else 
-				if (type.equals("doc")) { addDocThumb(body,n,sp); } else 
-				if (type.equals("picture")) { addPictureThumb(body,n,sp); } else 
-				if (type.equals("series")) { addSeriesThumb(body,n,sp); }  else {
+				ViewerInterface handler = getViewerHander(type);
+				if (handler!=null) {
+					handler.addThumb(body,n,sp);
+				} else {
 					addUnknownThumb(body,n,sp);	
 				}
 			}
@@ -422,99 +374,8 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		setContentOnScope(s,"summarytext", "Found  <font color=\"#60b4dc\">"+searchvalidcount+"</font> of <font color=\"#60b4dc\">"+fslist.size()+"</font> / Querytime <font color=\"#60b4dc\">"+duration+"ms</font> / Bytes <font color=\"#60b4dc\">"+(body.length()*2)+"</font>");
  	}
 	
-	private void addVideoThumb(StringBuffer body,FsNode n,SearchParams sp) {
-		// get some fields we need from the node 
-		String hasRaws  = n.getProperty("hasRaws");
-		String screenshot  = n.getProperty("screenshot");
-		
-		String title = n.getProperty("TitleSet_TitleSetInEnglish_title");
 
-		String subtitle = n.getProperty(sp.sortfield);
-		if (!sp.sortfield.equals("id") && subtitle!=null && !subtitle.equals(title)) {	
-			title += "<br />("+n.getProperty(sp.sortfield)+")";
-		}
-		String type=n.getName();
-		String path = n.getPath();
 	
-			// do we have really videos ? ifso lets display
-			if (hasRaws!=null && hasRaws.equals("true")) {
-				// if we have a screenshot if so display it if not not show i fixed image.
-				if (screenshot!=null && !screenshot.equals("")) {
-					screenshot = setEdnaMapping(screenshot);
-					String publicstate = n.getProperty("public");
-					String selclass = "itemimg";
-					if (publicstate==null || publicstate.equals("")) {
-						selclass = "itemimg_yellow";
-					} else if (publicstate.equals("true")) {
-						selclass = "itemimg";
-					} else  if (publicstate.equals("false")) {
-						selclass = "itemimg_red";
-					}
-					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\""+selclass+"\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
-				} else {
-					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itempimg\" width=\"320\" src=\"http://images1.noterik.com/nothumb.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
-				}
-			} else {
-				// so we have a broken video lets show them
-				body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itempimg\" width=\"320\" src=\"http://images1.noterik.com/brokenvideo.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
-			}
-	}
-	
-	private void addPictureThumb(StringBuffer body,FsNode n,SearchParams sp) {
-		// get some fields we need from the node 
-		String hasRaws  = n.getProperty("hasRaws");
-		String screenshot  = n.getProperty("screenshot");
-		String title = n.getProperty("TitleSet_TitleSetInEnglish_title");
-
-		String subtitle = n.getProperty(sp.sortfield);
-		if (!sp.sortfield.equals("id") && subtitle!=null && !subtitle.equals(title)) {	
-			title += "<br />("+n.getProperty(sp.sortfield)+")";
-		}
-		String type=n.getName();
-		String path = n.getPath();
-	
-			// do we have really videos ? ifso lets display
-			if (hasRaws!=null && hasRaws.equals("true")) {
-				// if we have a screenshot if so display it if not not show i fixed image.
-				if (screenshot!=null && !screenshot.equals("")) {
-					screenshot = setEdnaMapping(screenshot);
-					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
-				} else {
-					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/nothumb.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
-				}
-			} else {
-				// so we have a broken video lets show them
-				body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/brokenvideo.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
-			}
-	}
-	
-	private void addDocThumb(StringBuffer body,FsNode n,SearchParams sp) {
-		// get some fields we need from the node 
-		String hasRaws  = n.getProperty("hasRaws");
-		String screenshot  = n.getProperty("screenshot");
-		String title = n.getProperty("TitleSet_TitleSetInEnglish_title");
-
-		String subtitle = n.getProperty(sp.sortfield);
-		if (!sp.sortfield.equals("id") && subtitle!=null && !subtitle.equals(title)) {	
-			title += "<br />("+n.getProperty(sp.sortfield)+")";
-		}
-		String type=n.getName();
-		String path = n.getPath();
-	
-			// do we have really videos ? ifso lets display
-			if (hasRaws!=null && hasRaws.equals("true")) {
-				// if we have a screenshot if so display it if not not show i fixed image.
-				if (screenshot!=null && !screenshot.equals("")) {
-					screenshot = setEdnaMapping(screenshot);
-					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
-				} else {
-					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/pdf.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
-				}
-			} else {
-				// so we have a broken video lets show them
-				body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/brokendoc.jpeg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
-			}
-	}
 
 	private void addUnknownThumb(StringBuffer body,FsNode n,SearchParams sp) {
 		//log("enter addUnknown");
@@ -528,49 +389,6 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	}
 
 	
-	private void addAudioThumb(StringBuffer body,FsNode n,SearchParams sp) {
-		// get some fields we need from the node 
-		String hasRaws  = n.getProperty("hasRaws");
-		String screenshot  = n.getProperty("screenshot");
-		String title = n.getProperty("TitleSet_TitleSetInEnglish_title");
-		String subtitle = n.getProperty(sp.sortfield);
-		if (!sp.sortfield.equals("id") && subtitle!=null && !subtitle.equals(title)) {	
-			title += "<br />("+n.getProperty(sp.sortfield)+")";
-		}
-		String type=n.getName();
-		String path = n.getPath();
-	
-			// do we have really videos ? ifso lets display
-			if (hasRaws!=null && hasRaws.equals("true")) {
-				// if we have a screenshot if so display it if not not show i fixed image.
-				if (screenshot!=null && !screenshot.equals("")) {
-					screenshot = setEdnaMapping(screenshot);
-					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
-				} else {
-					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/audiofile.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
-				}
-			} else {
-				// so we have a broken audio lets show them
-				body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/audiofile.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
-			}
-	}
-	
-	private void addSeriesThumb(StringBuffer body,FsNode n,SearchParams sp) {
-		// get some fields we need from the node 
-		String hasRaws  = n.getProperty("hasRaws");
-		String screenshot  = n.getProperty("screenshot");
-		String title = n.getProperty("TitleSet_TitleSetInEnglish_seriesOrCollectionTitle");
-		String subtitle = n.getProperty(sp.sortfield);
-		if (!sp.sortfield.equals("id") && subtitle!=null && !subtitle.equals(title)) {	
-			title += "<br />("+n.getProperty(sp.sortfield)+")";
-		}
-		String type=n.getName();
-		String path = n.getPath();
-
-		body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/series.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
-	}
-
-
 	
 	/*
 	 * simple filter based on provider
@@ -822,24 +640,17 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		
 		// get the node we want to display from the collection.
 		FsNode node = fslist.getNode(path);
-
-		// create the button to close the itempage, it works by sending a msg back that
-		// really closes it.
-		String body = "<table>";
 		
-		// we create the panels and turn the correct one dark, there is no contruction clientside we 
-		// just create the correct table everytime. Since we need to sync it over multiple screens it
-		// makes more sense.
-		for(int i=0;i<panels.length;i++) {
-			String pname = panels[i];
-			if (pname.equals(panel)) {
-				body+="<th class=\"switchheader\" onmouseup=\"eddie.putLou('', 'switchpanel("+path+","+pname+")');\">"+pname+"</th>";
-			} else {
-				body+="<td class=\"switchheader\" onmouseup=\"eddie.putLou('', 'switchpanel("+path+","+pname+")');\">"+pname+"</td>";	
-			}
+		String nodetype = node.getName();
+		
+		ViewerInterface handler = getViewerHander(nodetype);
+		if (handler!=null) {
+			return handler.getRelatedInfoHeader(fslist, node, path, panel);
+		} else {
+			System.out.println("NEW TYPE NOT SUPPORTED IN getRelatedInfo "+nodetype);
 		}
-		body+="</tr></table>";
-		return body;
+
+		return "";
 	}
 	
 	/*
@@ -853,208 +664,27 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		
 		// get the node we want to display from the collection.		
 		FsNode node = fslist.getNode(path);
-
-		// create the button to close the itempage, it works by sending a msg back that
-		// really closes it.
-		String body = "<table>";
-		if (panel.equals("Overview")) { body+=getOverviewPanel(node); } else
-		if (panel.equals("Technical info")) { body+=getTechnicalInfoPanel(node); } else
-		if (panel.equals("Copyright")) { body+=getCopyrightPanel(node); } else
-		if (panel.equals("Description")) { body+=getDescriptionPanel(node); } else
-		if (panel.equals("Native langauge")) { body+=getNativeLangaugePanel(node); } else
-		if (panel.equals("Xml files")) { body+=getXmlFilesPanel(node); } else
-		if (panel.equals("Noterik fields")) { body+=getNoterikFieldsPanel(node); }
-		return body;
-	}
-	
-	/*
-	 * generate the overview panel 
-	 */
-	private String getOverviewPanel(FsNode node) {
-		System.out.println("TITLE="+node.getProperty("TitleSet_TitleSetInEnglish_title"));
-		String body="<tr><td>English Title<hr></td><th>"+node.getProperty("TitleSet_TitleSetInEnglish_title")+"<hr></th></tr>";
-		body+="<tr><td>Clip Title<hr></td><th>"+node.getProperty("clipTitle")+"<hr></th></tr>";
-		body+="<tr><td>Genre<hr></td><th>"+node.getProperty("genre")+"<hr></th></tr>";
-		body+="<tr><td>Topic<hr></td><th>"+node.getProperty("topic")+"<hr></th></tr>";
-		body+="<tr><td>SeriesOrCollectionTitle<hr></td><th>"+node.getProperty("TitleSet_TitleSetInEnglish_seriesOrCollectionTitle")+"<hr></th></tr>";
-		String cvsValue = node.getProperty("ThesaurusTerm");
-		if(cvsValue!=null) {
-			String[] tmp = cvsValue.split(",");
-			cvsValue = StringUtils.join(tmp, ", ");
-		}
-		body+="<tr><td>Thesaurus terms<hr></td><th>"+cvsValue+"<hr></th></tr>";
-		body+="<tr><td>Production year<hr></td><th>"+node.getProperty("SpatioTemporalInformation_TemporalInformation_productionYear")+"<hr></th></tr>";
-		body+="<tr><td>Broadcast date<hr></td><th>"+node.getProperty("SpatioTemporalInformation_TemporalInformation_broadcastDate")+"<hr></th></tr>";
-		cvsValue = node.getProperty("SpatioTemporalInformation_SpatialInformation_GeographicalCoverage");
-		if(cvsValue!=null) {
-			String[] tmp = cvsValue.split(",");
-			cvsValue = StringUtils.join(tmp, ", ");
-		}
-		body+="<tr><td>Geographical coverage<hr></td><th>"+cvsValue+"<hr></th></tr>";
-		cvsValue = node.getProperty("contributor");
-		if(cvsValue!=null) {
-			String[] tmp = cvsValue.split(",");
-			cvsValue = StringUtils.join(tmp, ", ");
-		}
-		body+="<tr><td>Contributor<hr></td><th>"+cvsValue+"<hr></th></tr>";
-		body+="<tr><td>Publisherbroadcaster<hr></td><th>"+node.getProperty("publisherbroadcaster")+"<hr></th></tr>";
-		body+="<tr><td>First Broadcastchannel<hr></td><th>"+node.getProperty("firstBroadcastChannel")+"<hr></th></tr>";
-		body+="<tr><td>Provider<hr></td><th>"+node.getProperty("provider")+"<hr></th></tr>";
-		return body;
-	}
-	
-	/*
-	 * generate the native langauge panel
-	 */
-	private String getNativeLangaugePanel(FsNode node) {
-		String body="<tr><td>Original language title<hr></td><th>"+node.getProperty("TitleSet_TitleSetInOriginalLanguage_title")+"<hr></th></tr>";
-		body+="<tr><td>Original language seriesOrCollectionTitle<hr></td><th>"+node.getProperty("TitleSet_TitleSetInOriginalLanguage_seriesOrCollectionTitle")+"<hr></th></tr>";
-		body+="<tr><td>Original language<hr></td><th>"+node.getProperty("originallanguage")+"<hr></th></tr>";
-		body+="<tr><td>Original summary<hr></td><th>"+node.getProperty("summary")+"<hr></th></tr>";
-		return body;
-	}
-	
-	/*
-	 * generate the copyright panel
-	 */
-	private String getCopyrightPanel(FsNode node) {
-		String body="<tr><td>Rights Terms And Conditions<hr></td><th>"+node.getProperty("rightsTermsAndConditions")+"<hr></th></tr>";
-		body+="<tr><td>Ipr Restrictions<hr></td><th>"+node.getProperty("iprRestrictions")+"<hr></th></tr>";
-		return body;
-	}
-	
-	/*
-	 * generate the xml panel with links
-	 */
-	private String getXmlFilesPanel(FsNode node) {
-		String body="<tr><td>First import date<hr></td><th>"+node.getProperty("firstimportdate")+"<hr></th></tr>";
-		body+="<tr><td>Current import date<hr></td><th>"+node.getProperty("currentimportdate")+"<hr></th></tr>";
-		return body;
-	}
-	
-	
-	
-	/*
-	 * generate the technical panel
-	 */
-	private String getTechnicalInfoPanel(FsNode node) {
-		String body="<tr><td>Material type<hr></td><th>"+node.getProperty("TechnicalInformation_materialType")+"<hr></th></tr>";
-		body+="<tr><td>Original identifier<hr></td><th>"+node.getProperty("originalIdentifier")+"<hr></th></tr>";
-		body+="<tr><td>Item color<hr></td><th>"+node.getProperty("TechnicalInformation_itemColor")+"<hr></th></tr>";
-		body+="<tr><td>Item sound<hr></td><th>"+node.getProperty("TechnicalInformation_itemSound")+"<hr></th></tr>";
-		body+="<tr><td>Item duration<hr></td><th>"+node.getProperty("TechnicalInformation_itemDuration")+"<hr></th></tr>";
-		body+="<tr><td>Record type<hr></td><th>"+node.getProperty("recordType")+"<hr></th></tr>";
-		body+="<tr><td>Filename<hr></td><th>"+node.getProperty("filename")+"<hr></th></tr>";
-		body+="<tr><td>EUScreen ID<hr></td><th>"+node.getId()+"<hr></th></tr>";
-		return body;
-	}
-	
-	/*
-	 * generate the description panel
-	 */
-	private String getDescriptionPanel(FsNode node) {
-		String body="<tr><td>English summary<hr></td><th>"+node.getProperty("summaryInEnglish")+"<hr></th></tr>";
-		body+="<tr><td>Extended Description<hr></td><th>"+node.getProperty("extendedDescription")+"<hr></th></tr>";
-		return body;
-	}
-	
-	/*
-	 * generate the noterik fields
-	 */
-	private String getNoterikFieldsPanel(FsNode node) {
-		String body="<tr><td>Ingest report<hr></td><th>"+node.getProperty("ingestreport")+"<hr></th></tr>";
-		body+="<tr><td>Datasource<hr></td><th>"+node.getProperty("datasource")+"<hr></th></tr>";
-		body+="<tr><td>Sort title<hr></td><th>"+node.getProperty("sort_title")+"<hr></th></tr>";
-		body+="<tr><td>Has raws<hr></td><th>"+node.getProperty("hasRaws")+"<hr></th></tr>";
-		body+="<tr><td>Decade<hr></td><th>"+node.getProperty("decade")+"<hr></th></tr>";
-		body+="<tr><td>Screenshot<hr></td><th>"+node.getProperty("screenshot")+"<hr></th></tr>";
-		body+="<tr><td>Storage<hr></td><th>"+node.getPath()+"<hr></th></tr>";
-		body+="<tr><td>Smithers node<hr></td><th><a href=\"http://player3.noterik.com:8081/bart"+node.getPath()+"\" target=\"new\">http://player3.noterik.com:8081/bart"+node.getPath()+"<hr></th></tr>";	
-		return body;
-	}
-	
-	private void showVideoPreview(Screen s,String path) {
 		
-		//Prepare the notification box for right-click on video
-		String body = "<div id=\"copyrightBox\" style=\"display:none;\"><span class=\"dismiss\"><a title=\"dismiss this notification\">x</a></span><div>EUscreen offers thousands of items of film and television clips, photos and texts provided by audiovisual archives from all over Europe.<br/><br/>Are you interested in using a clip from our collection? Please click <a href='#'>here to contact the provider</a> of this clip and ask for the rights to reuse it.</div></div>";
-		// its a video object so lets load and send the video tag to the screens.
-		body+="<video id=\"video1\" autoplay controls preload=\"none\" data-setup=\"{}\">";
-
-		// if its a video we need its rawvideo node for where the file is.
-		FsNode rawvideonode = Fs.getNode(path+"/rawvideo/1");
-		if (rawvideonode!=null) {
-			String mounts[] = rawvideonode.getProperty("mount").split(",");
-
-			// based on the type of mount (path) create the rest of the video tag.
-			String mount = mounts[0];
-			if (mount.indexOf("http://")==-1 && mount.indexOf("rtmp://")==-1) {
-				String ap = "http://"+mount+".noterik.com/progressive/"+mount+path+"/rawvideo/1/raw.mp4";
-				body+="<source src=\""+ap+"\" type=\"video/mp4\" /></video>";
-			} else {
-				if (mount.indexOf("apasfw.apa.at/EUScreen/")!=-1) { // temp hack for ORF until uter is fixed
-					FsNode videonode = Fs.getNode(path);
-					mount="http://euscreen.orf.at/content/"+videonode.getProperty("filename");
-				}
-				if (mount.indexOf("vrt.flash.streampower.be/")!=-1) { // hack vrt
-				//	mount = "rtmp://fmsod.rte.ie/laweb/2011/1018";
-					FsNode videonode = Fs.getNode(path);
-					mount = "http://images3.noterik.com/rafael/data/proxy/eu_vrt/"+videonode.getId()+".mp4";
-				}
-				body+="<source src=\""+mount+"\" type=\"video/mp4\" /></video>";
-			}
+		String nodetype = node.getName();
+		
+		ViewerInterface handler = getViewerHander(nodetype);
+		if (handler!=null) {
+			return handler.getRelatedInfo(fslist, node, path, panel);
 		} else {
-			// missing video
+			System.out.println("NEW TYPE NOT SUPPORTED IN getRelatedInfo "+nodetype);
 		}
 		
-		// if its a video we need its rawvideo node for where the file is.
-		FsNode videonode = Fs.getNode(path);
-		String publicstate =null;
-		if (videonode!=null) {
-			publicstate = videonode.getProperty("public");
-			boolean allowed = s.checkNodeActions(videonode, "read");
-			//allowed = true;
-			// nice lets set the preview image
-			String screenshot  = videonode.getProperty("screenshot");
-			if (screenshot!=null && !screenshot.equals("")) {
-				body += "<div id=\"screenshotlabel\">SELECTED MEDIA THUMBNAIL</div>";
-				screenshot = setEdnaMapping(screenshot);
-				if (allowed) {
-					body +="<div id=\"screenshotdiv\" onmouseup=\"eddie.putLou('','openscreenshoteditor("+videonode.getId()+")');\"><img id=\"screenshot\" src=\""+screenshot+"\" /></div>";
-					body += "<div onmouseup=\"eddie.putLou('','openscreenshoteditor("+videonode.getId()+")');\" id=\"screenshoteditlink\">Select different thumbnail</div>";
-				} else {
-					body +="<div id=\"screenshotdiv\"><img id=\"screenshot\" src=\""+screenshot+"\" /></div>";
-				}
-			}
-			if (LazyHomer.inDeveloperMode()) {
-				body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreenxl.eu/item.html?id="+videonode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";
-			} else {
-				body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreen.eu/item.html?id="+videonode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";				
-			}
-			if (allowed) {
-				body += getItemCommands(s,path,videonode.getId());
-				allowed = s.checkNodeActions(videonode, "write");
-				if (allowed && (publicstate==null || publicstate.equals("") || publicstate.equals("false"))) {
-					body += "<div onmouseup=\"eddie.putLou('','updateitemfromxml("+videonode.getId()+")');\" id=\"updateitemlink\">Update this media from Mint</div>";
-				}
-			}
+		/*
+		if (nodetype.equals("video")) { return VideoViewer.getRelatedInfo(fslist, node, path, panel);
+		} else if (nodetype.equals("audio")) { return AudioViewer.getRelatedInfo(fslist, node, path, panel);
+		} else {
+			System.out.println("NEW TYPE NOT SUPPORTED IN getRelatedInfo "+nodetype);
 		}
-		
-		setContentOnScope(s,"itempageleft",body);
-		setVideoBorder(s,publicstate);
-		ComponentInterface itempage = getComponentManager().getComponent("itempage");
-		itempage.putOnScope(s,"euscreenxlpreview", "copyrightvideo()");
+		*/
+		return "";
 	}
 	
-	private void setVideoBorder(Screen s,String publicstate) {
-		ComponentInterface itempage = getComponentManager().getComponent("itempage");
-		if (publicstate==null || publicstate.equals("")) {
-			itempage.putOnScope(s,"euscreenxlpreview", "borderyellow()");
-		} else if (publicstate.equals("true")) {
-			itempage.putOnScope(s,"euscreenxlpreview", "borderwhite()");
-		} else  if (publicstate.equals("false")) {
-			itempage.putOnScope(s,"euscreenxlpreview", "borderred()");
-		}
-	}
+	
 	
 	public void approvemedia(Screen s,String id) {
 		System.out.println("ID="+id);
@@ -1065,7 +695,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			FsNode node = (FsNode)nodes.get(0);
 			Fs.setProperty(node.getPath(),"public","true");
 			node.setProperty("public","true");	
-			setVideoBorder(s,"true");
+			VideoViewer.setVideoBorder(this,s,"true");
 		}
 	}
 	
@@ -1081,7 +711,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			FsNode node = (FsNode)nodes.get(0);
 			Fs.setProperty(node.getPath(),"public","true");
 			node.setProperty("public","true");	
-			setVideoBorder(s,"true");
+			VideoViewer.setVideoBorder(this,s,"true");
 		}
 		
 		nodes = fslist.getNodesFiltered(nextid.toLowerCase()); // find the item
@@ -1102,7 +732,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			FsNode node = (FsNode)nodes.get(0);
 			Fs.setProperty(node.getPath(),"public","false");
 			node.setProperty("public","false");	
-			setVideoBorder(s,"false");
+			VideoViewer.setVideoBorder(this,s,"false");
 		}
 		
 	}
@@ -1119,7 +749,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			FsNode node = (FsNode)nodes.get(0);
 			Fs.setProperty(node.getPath(),"public","false");
 			node.setProperty("public","false");	
-			setVideoBorder(s,"false");
+			VideoViewer.setVideoBorder(this,s,"false");
 		}
 		
 		nodes = fslist.getNodesFiltered(nextid.toLowerCase()); // find the item
@@ -1284,7 +914,24 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	}
 	
 	
-	
+	private ViewerInterface getViewerHander(String type) {
+		if (type.equals("video")) {
+			return VideoViewer.instance();
+		} else if (type.equals("audio")) {
+			return AudioViewer.instance();
+		} else if (type.equals("collection")) {
+			return CollectionViewer.instance();
+		} else if (type.equals("picture")) {
+			return PictureViewer.instance();
+		} else if (type.equals("series")) {
+			return PictureViewer.instance();
+		} else if (type.equals("doc")) {
+			return DocViewer.instance();
+		} else if (type.equals("teaser")) {
+			return TeaserViewer.instance();
+		} 
+		return null;
+	}
 	
 
 }

@@ -148,11 +148,9 @@
 			 <exclude name="WEB-INF/web.xml" />
 			</fileset>
 		</war>
-		<!-- <copyfile src="${package.location.war}" dest="/springfield/lou/uploaddir/smt_portiatestapp.war"/> -->
-		<!-- <scp file="${package.location.war}" todir="root@c3.noterik.com:/tmp" knownhosts="/Users/scb2/.ssh/known_hosts" trust="true" passphrase="" keyfile="/Users/scb2/.ssh/ntk_rsa" /> -->
-        <!-- <exec executable="/bin/bash">
+        <exec executable="/bin/bash">
         <arg value="/springfield/tomcat/bin/noterikcopy_4b.sh"/>
-        </exec> -->
+        </exec>
 	</target>
 	
 </project>
