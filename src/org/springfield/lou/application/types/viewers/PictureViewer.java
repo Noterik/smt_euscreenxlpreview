@@ -171,31 +171,108 @@ public class PictureViewer extends ItemViewer implements ViewerInterface {
 		String hasRaws  = n.getProperty("hasRaws");
 		String screenshot  = n.getProperty("screenshot");
 		String title = n.getProperty("TitleSet_TitleSetInEnglish_title");
-
 		String subtitle = n.getProperty(sp.sortfield);
 		if (!sp.sortfield.equals("id") && subtitle!=null && !subtitle.equals(title)) {	
 			title += "<br />("+n.getProperty(sp.sortfield)+")";
 		}
+
 		String type=n.getName();
 		String path = n.getPath();
-	
-			// do we have really videos ? ifso lets display
-			if (hasRaws!=null && hasRaws.equals("true")) {
-				// if we have a screenshot if so display it if not not show i fixed image.
-				if (screenshot!=null && !screenshot.equals("")) {
-					screenshot = setEdnaMapping(screenshot);
-					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
-				} else {
-					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/nothumb.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
-				}
-			} else {
-				// so we have a broken video lets show them
-				body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/brokenvideo.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+
+		// if we have a screenshot if so display it if not not show i fixed image.
+		if (screenshot!=null && !screenshot.equals("")) {
+			screenshot = setEdnaMapping(screenshot);
+			String publicstate = n.getProperty("public");
+			String selclass = "itemimg";
+			if (publicstate==null || publicstate.equals("")) {
+				selclass = "itemimg_yellow";
+			} else if (publicstate.equals("true")) {
+				selclass = "itemimg";
+			} else  if (publicstate.equals("false")) {
+				selclass = "itemimg_red";
 			}
+			body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\""+selclass+"\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+		} else {
+			body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itempimg\" width=\"320\" src=\"http://images1.noterik.com/teaser.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+		}
 	}
 
 	public void showPreview(Html5ApplicationInterface app,Screen s,String path) {
 		
+		//Prepare the notification box for right-click on video
+		String body = "<div id=\"copyrightBox\" style=\"display:none;\"><span class=\"dismiss\"><a title=\"dismiss this notification\">x</a></span><div>EUscreen offers thousands of items of film and television clips, photos and texts provided by audiovisual archives from all over Europe.<br/><br/>Are you interested in using a clip from our collection? Please click <a href='#'>here to contact the provider</a> of this clip and ask for the rights to reuse it.</div></div>";
+
+		
+		// if its a video we need its rawvideo node for where the file is.
+		FsNode picturenode = Fs.getNode(path);
+		String publicstate =null;
+		if (picturenode!=null) {
+			publicstate = picturenode.getProperty("public");
+			boolean allowed = s.checkNodeActions(picturenode, "read");
+			//allowed = true;
+			// nice lets set the preview image
+			String screenshot  = picturenode.getProperty("screenshot");
+			body +="<img id=\"video1\" src=\""+screenshot+"\" />";
+			body +="<div id=\"screenshotdiv\"><img id=\"screenshot\" src=\""+screenshot+"\" /></div>";
+			if (LazyHomer.inDeveloperMode()) {
+				body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreenxl.eu/item.html?id="+picturenode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";
+			} else {
+				body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreen.eu/item.html?id="+picturenode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";				
+			}
+			if (allowed) {
+				body += getItemCommands(s,path,picturenode.getId());
+			}
+		}
+		
+		app.setContentOnScope(s,"itempageleft",body);
+		setVideoBorder(app,s,publicstate); // what do we do here instead, show the screenshot again ?
+		
+		ComponentInterface itempage = app.getComponentManager().getComponent("itempage");
+		itempage.putOnScope(s,"euscreenxlpreview", "copyrightvideo()");
+	}
+	
+	public static String getItemCommands(Screen s,String path,String id) {
+		// lets store this in the screen object for possible use on the 'next page'
+		List<FsNode> searchnodes = (List<FsNode>)s.getProperty("searchnodes");
+		
+		String body = "<div id=\"mediaactionlabel\">PICTURE ACTIONS</div>";
+		body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"return components.itempage.approvemedia('"+id+"')\" id=\"approvemedia\">Approve this picture<div id=\"approvemedia_animoverlay\"></div></div>";
+		body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"return components.itempage.disapprovemedia('"+id+"')\" id=\"disapprovemedia\">Reject picture<div id=\"disapprovemedia_animoverlay\"></div></div>";
+		if (searchnodes!=null) {
+			for(Iterator<FsNode> iter = searchnodes.iterator() ; iter.hasNext(); ) {
+				// get the next node
+				FsNode n = (FsNode)iter.next();	
+				if (n.getId().equals(id)) {
+					// nice we found it, is there still a next one ?
+					if (iter.hasNext()) {
+						n = (FsNode)iter.next(); // this should be out next id for the link !
+						body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"return components.itempage.approvemedianext('"+id+","+n.getId()+"')\" id=\"approvemedianext\">Approve picture and next<div id=\"approvemedianext_animoverlay\"></div></div>";
+						body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"return components.itempage.disapprovemedianext('"+id+","+n.getId()+"')\" id=\"disapprovemedianext\">Reject picture and next<div id=\"disapprovemedianext_animoverlay\"></div></div>";
+					}
+				}
+			}
+		}
+
+		return body;
+	}
+	
+	public String getCreateNewOptions(FsNode node) {
+		return null;
+	}
+	
+	public FsNode createNew(Screen s,String id,String item) {
+		return null;
+	}
+	
+	public static void setVideoBorder(Html5ApplicationInterface app,Screen s,String publicstate) {
+		ComponentInterface itempage = app.getComponentManager().getComponent("itempage");
+		if (publicstate==null || publicstate.equals("")) {
+			itempage.putOnScope(s,"euscreenxlpreview", "borderyellow()");
+		} else if (publicstate.equals("true")) {
+			itempage.putOnScope(s,"euscreenxlpreview", "borderwhite()");
+		} else  if (publicstate.equals("false")) {
+			itempage.putOnScope(s,"euscreenxlpreview", "borderred()");
+		}
 	}
 	
 

@@ -224,6 +224,14 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 		body+="<tr><td>Record type<hr></td><th>"+node.getProperty("recordType")+"<hr></th></tr>";
 		body+="<tr><td>Filename<hr></td><th>"+node.getProperty("filename")+"<hr></th></tr>";
 		body+="<tr><td>EUScreen ID<hr></td><th>"+node.getId()+"<hr></th></tr>";
+		
+		body+="<tr><td>Redo screenshots<hr></td><th>";
+		body += "<select id=\""+node.getId()+"\" onchange=\"return components.itempage.redoscreenshots(event,this.options[this.selectedIndex].value)\">";
+		body += "<option value=\"no\">no</option>";
+		body += "<option value=\"320\">320</option>";
+		body += "<option value=\"640\">640</option>";
+		body+="</select<<hr></th></tr>";
+		
 		return body;
 	}
 	
@@ -296,7 +304,7 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 		String body = "<div id=\"mediaactionlabel\">VIDEO ACTIONS</div>";
 		body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"return components.itempage.approvemedia('"+id+"')\" id=\"approvemedia\">Approve this video<div id=\"approvemedia_animoverlay\"></div></div>";
 		body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"return components.itempage.disapprovemedia('"+id+"')\" id=\"disapprovemedia\">Reject video<div id=\"disapprovemedia_animoverlay\"></div></div>";
-
+		
 		if (searchnodes!=null) {
 			for(Iterator<FsNode> iter = searchnodes.iterator() ; iter.hasNext(); ) {
 				// get the next node
@@ -311,11 +319,20 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 				}
 			}
 		}
+		body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"return components.itempage.createnewitem('"+id+"')\" id=\"createnewitem\">Create new<div id=\"createnewitem_animoverlay\"></div></div>";
 		return body;
 	}
 
-
+	public String getCreateNewOptions(FsNode node) {
+		String body="<div id=\"createbutton1\" onmouseup=\"eddie.putLou('', 'createnewitem(teaser,"+node.getId()+",highlights)');\"><br />Create Highlight teaser</div>";
+		body+="<div id=\"createbutton2\" onmouseup=\"eddie.putLou('', 'createnewitem(teaser,"+node.getId()+",inthenews)');\"><br />Create InTheNews teaser</div>";
+		body+="<div id=\"createcancel\" onmouseup=\"eddie.putLou('', 'createcancel()');\"><br />Cancel</div>";
+		return body;
+	}
 	
+	public FsNode createNew(Screen s,String id,String item) {
+		return null;
+	}	
 	
 
 }

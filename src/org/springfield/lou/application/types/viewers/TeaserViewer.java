@@ -1,5 +1,7 @@
 package org.springfield.lou.application.types.viewers;
 
+import java.security.MessageDigest;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -11,6 +13,8 @@ import org.springfield.lou.application.components.ComponentInterface;
 import org.springfield.lou.application.types.SearchParams;
 import org.springfield.lou.homer.LazyHomer;
 import org.springfield.lou.screen.Screen;
+import org.springfield.mojo.interfaces.ServiceInterface;
+import org.springfield.mojo.interfaces.ServiceManager;
 
 public class TeaserViewer extends ItemViewer implements ViewerInterface {
 		
@@ -60,11 +64,63 @@ public class TeaserViewer extends ItemViewer implements ViewerInterface {
 	}
 	
 	private static String getOverviewPanel(FsNode node) {
-		String body="<tr><td>Screenshot text<hr></td><th>"+node.getProperty("TitleSet_TitleSetInEnglish_title")+"<hr></th></tr>";
-		body+="<tr><td>Topic<hr></td><th>"+node.getProperty("topic")+"<hr></th></tr>";
+		String body="<tr><td>Screenshot text<hr></td>";
+		Boolean allowed = true;
+
+		if (allowed) {
+			body+="<th><input id=\""+node.getId()+"_teaser_title\" onkeyup=\"return components.itempage.propertychange(event)\" value=\""+node.getProperty("TitleSet_TitleSetInEnglish_title")+"\"><hr></th></tr>";
+			FSList referparents = node.getReferParents();
+			if (referparents!=null) {
+				List<FsNode> nodes = referparents.getNodes();
+				if (nodes.size()>0) {
+					FsNode n = nodes.get(0);
+					FsNode parent = n.getParentNode();
+					System.out.println("YESSS="+parent.getId());
+					String id = parent.getId();
+					if (id.equals("highlights")) {
+						body+=getHighlightsOptions(node.getProperty("topic"),node.getProperty("identifier"),"topic");
+					} else if (id.equals("inthenews")) {
+						body+=getInthenewsOptions(node.getProperty("topic"),node.getProperty("identifier"),"topic");
+					}
+				}
+			}
+
+		
+		} else {
+			body+="<th>"+node.getProperty("TitleSet_TitleSetInEnglish_title")+"<hr></th></tr>";
+			body+="<tr><td>Topic<hr></td><th>"+node.getProperty("topic")+"<hr></th></tr>";
+		}
+		
 		body+="<tr><td>Based on<hr></td><th>"+node.getProperty("basedon")+"<hr></th></tr>";
 		body+="<tr><td>Based on type <hr></td><th>"+node.getProperty("basedontype")+"<hr></th></tr>";
 		body+="<tr><td>Provider<hr></td><th>"+node.getProperty("provider")+"<hr></th></tr>";
+		return body;
+	}
+	
+	private static String getHighlightsOptions(String current,String id,String field) {
+		String body="<tr><td>Topic<hr></td><th>";
+		body += "<select id=\""+id+"_teaser_"+field+"\" onchange=\"return components.itempage.propertyoptionchange(event,this.options[this.selectedIndex].value)\">";
+		body += "<option value=\""+current+"\">"+current+"</option>";
+		body += "<option value=\"Fashion\">Fashion</option>";
+		body += "<option value=\"Holidays and Traditions\">Holidays and Traditions</option>";
+		body += "<option value=\"Scenery and Landscape\">Scenery and Landscape</option>";
+		body += "<option value=\"Lifestyle and Health\">Lifestyle and Health</option>";
+		body += "<option value=\"Changing Times\">Changing Times</option>";
+		body +="</select>";
+		body +="<hr></th></tr>";
+		return body;
+	}
+	
+	private static String getInthenewsOptions(String current,String id,String field) {
+		String body="<tr><td>Topic<hr></td><th>";
+		body += "<select id=\""+id+"_teaser_"+field+"\" onchange=\"return components.itempage.propertyoptionchange(event,this.options[this.selectedIndex].value)\">";
+		body += "<option value=\""+current+"\">"+current+"</option>";
+		body += "<option value=\"Climate Change\">Climate Change</option>";
+		body += "<option value=\"Ukraine\">Ukraine</option>";
+		body += "<option value=\"Terrorism\">Terrorism</option>";
+		body += "<option value=\"Economic Crisis\">Economic Crisis</option>";
+		body +="</select>";
+		body +="<hr></th></tr>";
 		return body;
 	}
 	
@@ -158,9 +214,11 @@ public class TeaserViewer extends ItemViewer implements ViewerInterface {
 				body += "<div id=\"screenshotlabel\">SELECTED MEDIA THUMBNAIL</div>";
 				screenshot = setEdnaMapping(screenshot);
 				if (allowed) {
+					body+="<img id=\"video1\" src=\""+screenshot+"\" />";
 					body +="<div id=\"screenshotdiv\" onmouseup=\"eddie.putLou('','openscreenshoteditor("+teasernode.getId()+")');\"><img id=\"screenshot\" src=\""+screenshot+"\" /></div>";
 					body += "<div onmouseup=\"eddie.putLou('','openscreenshoteditor("+teasernode.getId()+")');\" id=\"screenshoteditlink\">Select different thumbnail</div>";
 				} else {
+					body+="<img id=\"video1\" src=\""+screenshot+"\" />";
 					body +="<div id=\"screenshotdiv\"><img id=\"screenshot\" src=\""+screenshot+"\" /></div>";
 				}
 			}
@@ -175,7 +233,7 @@ public class TeaserViewer extends ItemViewer implements ViewerInterface {
 		}
 		
 		app.setContentOnScope(s,"itempageleft",body);
-		//setVideoBorder(app,s,publicstate); // what do we do here instead, show the screenshot again ?
+		setVideoBorder(app,s,publicstate); // what do we do here instead, show the screenshot again ?
 		
 		ComponentInterface itempage = app.getComponentManager().getComponent("itempage");
 		itempage.putOnScope(s,"euscreenxlpreview", "copyrightvideo()");
@@ -189,23 +247,75 @@ public class TeaserViewer extends ItemViewer implements ViewerInterface {
 		body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"return components.itempage.approvemedia('"+id+"')\" id=\"approvemedia\">Approve this teaser<div id=\"approvemedia_animoverlay\"></div></div>";
 		body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"return components.itempage.disapprovemedia('"+id+"')\" id=\"disapprovemedia\">Reject teaser<div id=\"disapprovemedia_animoverlay\"></div></div>";
 
-		if (searchnodes!=null) {
-			for(Iterator<FsNode> iter = searchnodes.iterator() ; iter.hasNext(); ) {
-				// get the next node
-				FsNode n = (FsNode)iter.next();	
-				if (n.getId().equals(id)) {
-					// nice we found it, is there still a next one ?
-					if (iter.hasNext()) {
-						n = (FsNode)iter.next(); // this should be out next id for the link !
-						body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"return components.itempage.approvemedianext('"+id+","+n.getId()+"')\" id=\"approvemedianext\">Approve teaser and next<div id=\"approvemedianext_animoverlay\"></div></div>";
-						body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"return components.itempage.disapprovemedianext('"+id+","+n.getId()+"')\" id=\"disapprovemedianext\">Reject teaser and next<div id=\"disapprovemedianext_animoverlay\"></div></div>";
-					}
-				}
-			}
-		}
 		return body;
 	}
+	
+	public void setProperty(FsNode node,String field,String value) {
+		System.out.println("Teaser setproperty "+node+" "+field+" value="+value);
+		node.setProperty(field, value);
+		Fs.setProperty(node.getPath(),field, value); // this is weird don't like that i just can't do 'save' on a node
+		
+		if (field.equals("title")) {
+			field = "TitleSet_TitleSetInEnglish_title";
+			node.setProperty(field, value);
+			Fs.setProperty(node.getPath(),field, value); // this is weird don't like that i just can't do 'save' on a node
 
+		}
+	}
+
+	public static void setVideoBorder(Html5ApplicationInterface app,Screen s,String publicstate) {
+		ComponentInterface itempage = app.getComponentManager().getComponent("itempage");
+		if (publicstate==null || publicstate.equals("")) {
+			itempage.putOnScope(s,"euscreenxlpreview", "borderyellow()");
+		} else if (publicstate.equals("true")) {
+			itempage.putOnScope(s,"euscreenxlpreview", "borderwhite()");
+		} else  if (publicstate.equals("false")) {
+			itempage.putOnScope(s,"euscreenxlpreview", "borderred()");
+		}
+	}
+	
+	public String getCreateNewOptions(FsNode node) {
+		return null;
+	}
+	
+	public FsNode createNew(Screen s,String id,String item) {
+		String uri = "/domain/euscreenxl/user/*/*"; // does this make sense, new way of mapping (daniel)
+		FSList fslist = FSListManager.get(uri);
+		List<FsNode> nodes = fslist.getNodesFiltered(id.toLowerCase()); // find the item
+		if (nodes!=null && nodes.size()>0) {
+			FsNode node = (FsNode)nodes.get(0);
+			long time = new Date().getTime();
+			int hash = ("AGENCY:teaser_"+id+"t"+time).hashCode();
+			String eusId = "EUS_"+Integer.toHexString(hash).toUpperCase()+id.substring(4);
+			System.out.println("MD5="+eusId);
+			FsNode teasernode = new FsNode("teaser",eusId);
+			teasernode.setProperty("TitleSet_TitleSetInEnglish_title",node.getProperty("TitleSet_TitleSetInEnglish_title"));
+			teasernode.setProperty("title",node.getProperty("TitleSet_TitleSetInEnglish_title"));
+			teasernode.setProperty("screenshot",node.getProperty("screenshot"));
+			teasernode.setProperty("madeby",s.getUserName());
+			teasernode.setProperty("aspectratio","16:9");
+			teasernode.setProperty("identifier",eusId);
+			teasernode.setProperty("provider","AGENCY");
+			teasernode.setProperty("basedon",node.getPath());
+			teasernode.setProperty("basedontype",node.getName());
+			
+			Fs.insertNode(teasernode, "/domain/euscreenxl/user/eu_agency");
+			
+			// kinda ugly
+			ServiceInterface smithers = ServiceManager.getService("smithers");
+			if (smithers==null) return null;
+			String postpath = "/domain/euscreenxl/user/eu_agency/collection/"+item+"/teaser/"+eusId;
+			String newpath = "/domain/euscreenxl/user/eu_agency/teaser/"+eusId;
+			String newbody = "<fsxml><attributes><referid>"+newpath+"</referid></attributes></fsxml>"; 
+			smithers.put(postpath+"/attributes",newbody,"text/xml");
+			
+			// insert it info the maggie cache !
+			teasernode.setPath(newpath); // should not be needed right ?
+			fslist.addNode(teasernode);
+			return teasernode;
+		}
+		return null;
+	}
 	
 	
 

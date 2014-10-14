@@ -181,6 +181,75 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		itempage.putOnScope(s,"euscreenxlpreview", "close()");	
 	}
 	
+	public void redoscreenshots(Screen s,String content) {
+		System.out.println("GOT A REDO SCREENSHOTS "+content);
+		String[] params = content.split(",");
+		String id = params[0];
+		System.out.println("ID="+id);
+		String size = params[1];
+		System.out.println("SIZE="+size);
+		FsNode screennode = new FsNode("screens","1");
+		if (size.equals("320")) {
+			screennode.setProperty("size","320x240");
+		} else {
+			screennode.setProperty("size","640x480");	
+		}
+		screennode.setProperty("interval","1");
+		screennode.setProperty("redo","true");
+		
+		String uri = "/domain/euscreenxl/user/*/*"; // does this make sense, new way of mapping (daniel)
+		FSList fslist = FSListManager.get(uri);
+		
+
+		List<FsNode> nodes = fslist.getNodesFiltered(id.toLowerCase()); // find the item
+		if (nodes!=null && nodes.size()>0) {
+			//System.out.println("FOUND NODE="+nodes.get(0));
+			FsNode n = (FsNode)nodes.get(0);
+			System.out.println("NPATH="+n.getPath());
+			Fs.insertNode(screennode,n.getPath());		
+		}
+	
+		
+		/*
+		List<FsNode> searchnodes = (List<FsNode>)s.getProperty("searchnodes");
+		if (searchnodes!=null) {
+			for(Iterator<FsNode> iter = searchnodes.iterator() ; iter.hasNext(); ) {
+				// get the next node
+				FsNode n = (FsNode)iter.next();	
+				System.out.println("NPATH="+n.getPath());
+				Fs.insertNode(screennode,n.getPath());	
+			}
+		}
+		*/
+		
+	}
+	
+	public void setproperty(Screen s,String content) {
+		System.out.println("GOT A SET PROPERTY="+content);
+		// this is a little weird no idea how todo this nicer, with the EUscreen id _
+		content = content.replace('_',',');
+		String[] params = content.split(",");
+		String id = params[0]+"_"+params[1]; // recreate the id
+		String type = params[2];
+		String field = params[3];
+		String value = params[4];
+		System.out.println("ID="+id+" type="+type+" field="+field+" value="+value);
+		ViewerInterface handler = getViewerHander(type);
+		if (handler!=null) {
+			// lets get the node
+			String uri = "/domain/euscreenxl/user/*/*"; // does this make sense, new way of mapping (daniel)
+			FSList fslist = FSListManager.get(uri);
+			List<FsNode> nodes = fslist.getNodesFiltered(id.toLowerCase()); // find the item
+			if (nodes!=null && nodes.size()>0) {
+				//System.out.println("FOUND NODE="+nodes.get(0));
+				FsNode n = (FsNode)nodes.get(0);
+				handler.setProperty(n,field,value);
+			}
+		} else {
+			System.out.println("NEW TYPE NOT SUPPORTED IN setProperty "+type);
+		}
+	}
+	
 	public void confirmaccount(Screen s) {	
 		String account = s.getParameter("account");
 		String ticket = s.getParameter("ticket");
@@ -673,14 +742,6 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		} else {
 			System.out.println("NEW TYPE NOT SUPPORTED IN getRelatedInfo "+nodetype);
 		}
-		
-		/*
-		if (nodetype.equals("video")) { return VideoViewer.getRelatedInfo(fslist, node, path, panel);
-		} else if (nodetype.equals("audio")) { return AudioViewer.getRelatedInfo(fslist, node, path, panel);
-		} else {
-			System.out.println("NEW TYPE NOT SUPPORTED IN getRelatedInfo "+nodetype);
-		}
-		*/
 		return "";
 	}
 	
@@ -861,7 +922,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		System.out.println("Updateitem: nodes size "+nodes.size());
 		if (nodes!=null && nodes.size()>0) {
 			FsNode itemnode = (FsNode)nodes.get(0);
-			ServiceInterface uter = ServiceManager.getService("uter");
+			ServiceInterface uter = ServiceManager.getService("uter","10.88.8.224");
 			if (uter!=null) {
 				System.out.println("Updateitem: sending request to uter.");
 				uter.put(itemnode.getPath(), null, null);
@@ -879,8 +940,10 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			int pos = screenshot.indexOf("edna/");
 			if 	(pos!=-1) {
 				screenshot = "http://images.euscreenxl.eu/"+screenshot.substring(pos+5);
+			//	screenshot = "http://player6.noterik.com:8080/edna/"+screenshot.substring(pos+5)+"??script=euscreen320t";
 			}
 		}
+		screenshot +="?script=euscreen320t";
 		return screenshot;
 	}
 	
@@ -905,6 +968,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		result += "/sec" + sec + ".jpg";
 		return result;
 	}
+
 	
 	
 	
@@ -924,13 +988,45 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		} else if (type.equals("picture")) {
 			return PictureViewer.instance();
 		} else if (type.equals("series")) {
-			return PictureViewer.instance();
+			return SeriesViewer.instance();
 		} else if (type.equals("doc")) {
 			return DocViewer.instance();
 		} else if (type.equals("teaser")) {
 			return TeaserViewer.instance();
 		} 
 		return null;
+	}
+	
+	public void shownewitemwindow(Screen s,String content) {
+		// what type is this so we can decide who makes the 'create new options'
+		String uri = "/domain/euscreenxl/user/*/*"; // does this make sense, new way of mapping (daniel)
+		FSList fslist = FSListManager.get(uri);
+		List<FsNode> nodes = fslist.getNodesFiltered(content.toLowerCase()); // find the item
+		if (nodes!=null && nodes.size()>0) {
+			FsNode node = (FsNode)nodes.get(0);
+			ViewerInterface handler = getViewerHander(node.getName());
+			if (handler!=null) {
+				String body = handler.getCreateNewOptions(node);
+				s.setContent("newitemwindow", body);
+			}
+		}
+	}
+	
+	public void createnewitem(Screen s,String content) {
+		String[] params = content.split(",");
+		String type = params[0];
+		String id  = params[1];
+		String item  = params[2];
+		ViewerInterface handler = getViewerHander(type);
+		if (handler!=null) {
+			FsNode node = handler.createNew(s,id, item);
+			// jump to that item
+			if (node!=null) {
+				s.removeContent("newitemwindow");
+				System.out.println("OPEN AFTER CREATE="+node.getName()+","+node.getPath());
+				open(s,node.getName()+","+node.getPath());
+			}
+		}
 	}
 	
 

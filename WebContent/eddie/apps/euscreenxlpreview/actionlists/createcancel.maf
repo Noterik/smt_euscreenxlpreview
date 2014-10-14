@@ -1,2 +1,1 @@
-callServer(close,screen)
 removecontent(screen,newitemwindow)

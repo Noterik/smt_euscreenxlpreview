@@ -66,7 +66,9 @@ public class SeriesViewer extends ItemViewer implements ViewerInterface {
 	 */
 	private static String getOverviewPanel(FsNode node) {
 		System.out.println("TITLE="+node.getProperty("TitleSet_TitleSetInEnglish_title"));
-		String body="<tr><td>English Title<hr></td><th>"+node.getProperty("TitleSet_TitleSetInEnglish_title")+"<hr></th></tr>";
+		
+		String body="<tr><td>English Title<hr></td>";
+		body+="<th>"+node.getProperty("TitleSet_TitleSetInEnglish_title")+"<hr></th></tr>";
 		body+="<tr><td>Clip Title<hr></td><th>"+node.getProperty("clipTitle")+"<hr></th></tr>";
 		body+="<tr><td>Genre<hr></td><th>"+node.getProperty("genre")+"<hr></th></tr>";
 		body+="<tr><td>Topic<hr></td><th>"+node.getProperty("topic")+"<hr></th></tr>";
@@ -171,6 +173,7 @@ public class SeriesViewer extends ItemViewer implements ViewerInterface {
 		// get some fields we need from the node 
 		String hasRaws  = n.getProperty("hasRaws");
 		String screenshot  = n.getProperty("screenshot");
+		screenshot = "http://images1.noterik.com/series.png";
 		String title = n.getProperty("TitleSet_TitleSetInEnglish_seriesOrCollectionTitle");
 		String subtitle = n.getProperty(sp.sortfield);
 		if (!sp.sortfield.equals("id") && subtitle!=null && !subtitle.equals(title)) {	
@@ -179,12 +182,87 @@ public class SeriesViewer extends ItemViewer implements ViewerInterface {
 		String type=n.getName();
 		String path = n.getPath();
 
-		body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/series.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+		// if we have a screenshot if so display it if not not show i fixed image.
+		if (screenshot!=null && !screenshot.equals("")) {
+			screenshot = setEdnaMapping(screenshot);
+			String publicstate = n.getProperty("public");
+			String selclass = "itemimg";
+			if (publicstate==null || publicstate.equals("")) {
+				selclass = "itemimg_yellow";
+			} else if (publicstate.equals("true")) {
+				selclass = "itemimg";
+			} else  if (publicstate.equals("false")) {
+				selclass = "itemimg_red";
+			}
+			body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\""+selclass+"\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+		} else {
+			body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itempimg\" width=\"320\" src=\"http://images1.noterik.com/teaser.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+		}
 	}
 	
 	public void showPreview(Html5ApplicationInterface app,Screen s,String path) {
 		
+		//Prepare the notification box for right-click on video
+		String body = "<div id=\"copyrightBox\" style=\"display:none;\"><span class=\"dismiss\"><a title=\"dismiss this notification\">x</a></span><div>EUscreen offers thousands of items of film and television clips, photos and texts provided by audiovisual archives from all over Europe.<br/><br/>Are you interested in using a clip from our collection? Please click <a href='#'>here to contact the provider</a> of this clip and ask for the rights to reuse it.</div></div>";
+
+		
+		// if its a video we need its rawvideo node for where the file is.
+		FsNode seriesnode = Fs.getNode(path);
+		String publicstate =null;
+		if (seriesnode!=null) {
+			publicstate = seriesnode.getProperty("public");
+			boolean allowed = s.checkNodeActions(seriesnode, "read");
+			//allowed = true;
+			// nice lets set the preview image
+			String screenshot  = seriesnode.getProperty("screenshot");
+			screenshot = "http://images1.noterik.com/series.png";
+			if (screenshot!=null && !screenshot.equals("")) {
+				body += "<div id=\"screenshotlabel\">SELECTED MEDIA THUMBNAIL</div>";
+				screenshot = setEdnaMapping(screenshot);
+				if (allowed) {
+					body+="<img id=\"video1\" src=\""+screenshot+"\" />";
+					body +="<div id=\"screenshotdiv\" onmouseup=\"eddie.putLou('','openscreenshoteditor("+seriesnode.getId()+")');\"><img id=\"screenshot\" src=\""+screenshot+"\" /></div>";
+					body += "<div onmouseup=\"eddie.putLou('','openscreenshoteditor("+seriesnode.getId()+")');\" id=\"screenshoteditlink\">Select different thumbnail</div>";
+				} else {
+					body+="<img id=\"video1\" src=\""+screenshot+"\" />";
+					body +="<div id=\"screenshotdiv\"><img id=\"screenshot\" src=\""+screenshot+"\" /></div>";
+				}
+			}
+			if (LazyHomer.inDeveloperMode()) {
+				body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreenxl.eu/item.html?id="+seriesnode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";
+			} else {
+				body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreen.eu/item.html?id="+seriesnode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";				
+			}
+			if (allowed) {
+				body += getItemCommands(s,path,seriesnode.getId());
+			}
+		}
+		
+		app.setContentOnScope(s,"itempageleft",body);
+		setVideoBorder(app,s,publicstate); // what do we do here instead, show the screenshot again ?
+		
+		ComponentInterface itempage = app.getComponentManager().getComponent("itempage");
+		itempage.putOnScope(s,"euscreenxlpreview", "copyrightvideo()");
+	
 	}
 	
+	public static void setVideoBorder(Html5ApplicationInterface app,Screen s,String publicstate) {
+		ComponentInterface itempage = app.getComponentManager().getComponent("itempage");
+		if (publicstate==null || publicstate.equals("")) {
+			itempage.putOnScope(s,"euscreenxlpreview", "borderyellow()");
+		} else if (publicstate.equals("true")) {
+			itempage.putOnScope(s,"euscreenxlpreview", "borderwhite()");
+		} else  if (publicstate.equals("false")) {
+			itempage.putOnScope(s,"euscreenxlpreview", "borderred()");
+		}
+	}
+	
+	public String getCreateNewOptions(FsNode node) {
+		return null;
+	}
+
+	public FsNode createNew(Screen s,String id,String item) {
+		return null;
+	}
 
 }

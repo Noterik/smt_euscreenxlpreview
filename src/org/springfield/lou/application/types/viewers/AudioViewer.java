@@ -231,5 +231,13 @@ public class AudioViewer extends ItemViewer implements ViewerInterface {
 		// lets fill the 'itempageleft' div on all the screens in the scope with it
 		app.setContentOnScope(s,"itempageleft",body);
 	}
+	
+	public String getCreateNewOptions(FsNode node) {
+		return null;
+	}
+	
+	public FsNode createNew(Screen s,String id,String item) {
+		return null;
+	}
 
 }

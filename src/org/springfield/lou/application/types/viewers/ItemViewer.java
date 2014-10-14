@@ -18,6 +18,7 @@ public class ItemViewer {
 				screenshot = "http://images.euscreenxl.eu/"+screenshot.substring(pos+5);
 			}
 		}
+		screenshot +="?script=euscreen320t";
 		return screenshot;
 	}
 	
@@ -44,6 +45,10 @@ public class ItemViewer {
 			}
 		}
 		return body;
+	}
+	
+	public void setProperty(FsNode node,String field,String value) {
+		System.out.println("Calling setProperty on a Viewer that hasn't implemented this call");
 	}
 	
 }

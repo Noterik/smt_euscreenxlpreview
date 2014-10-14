@@ -169,6 +169,16 @@ hr {
 	cursor: pointer;
 }
 
+#createnewitem {
+	position:absolute;
+	width: 200px;
+	top: 630px;
+	left: 55px;
+	font-size: 14px;
+	color: #6f9a19;
+	cursor: pointer;
+}
+
 #disapprovemedia {
 	position:absolute;
 	width: 200px;
@@ -269,6 +279,22 @@ hr {
 	width: 100%;
 	display: none;
 	z-index:100;
+}
+
+#newitemwindow {
+	color: #666666;
+	text-align: center;
+	font-style: bold;
+	background-color: #ffffff;
+	position:absolute;
+	right : 0px;
+	top:70px;
+	left: 275px;
+	bottom: 0px;
+	border:0px solid #dddddd;
+	z-index:200;
+	padding-top: 20px;
+	padding-left: 10px;
 }
 
 #screenshoteditor {
@@ -538,6 +564,15 @@ hr {
 	opacity: 0;
 }
 
+#createnewitem_animoverlay {
+	position:relative;
+	top: -20px;
+	height : 20px;
+	width : 0%;
+	background-color : #00ff00;
+	z-index:210;
+}
+	
 #disapprovemedia_animoverlay {
 	position:relative;
 	top: -20px;
@@ -1079,5 +1114,45 @@ label {
 #copyrightBox a {
 	color:#fff;
 	text-decoration:underline;
+}
+
+#createbutton1 {
+	position: absolute;
+    background-color:#b4e088;
+    top: 50px;
+    width: 20%;
+    height: 150px;
+    left: 20%;
+    text-align:center;
+    font-weight:normal;
+    font-size:24px;
+    color: #5b7d3e;
+    
+}
+
+#createbutton2 {
+	position: absolute;
+    background-color:#b4e088;
+    top: 50px;
+    width: 20%;
+    height: 150px;
+    left: 60%;
+    text-align:center;
+    font-weight:normal;
+    font-size:24px;
+    color: #5b7d3e;
+}
+
+#createcancel {
+	position: absolute;
+    background-color:#c56054;
+    bottom: 100px;
+    width: 20%;
+    height: 80px;
+    left: 40%;
+    text-align:center;
+    font-weight:normal;
+    font-size:24px;
+    color: #8e463d;
 }
 

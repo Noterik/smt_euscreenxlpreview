@@ -78,11 +78,27 @@ var Itempage = function(options){
  		proceed = true;
     }
     
+   	self.createnewitem = function(id) {
+		$('#createnewitem_animoverlay').css('opacity','0.5');
+		$('#createnewitem_animoverlay').css('width','0%');
+		$('#createnewitem_animoverlay').animate({width:'100%'},1200,function() { self.createnewitemDone(id); });
+ 		proceed = true;
+    }
+    
     self.approvemediaDone = function(id) {
 		$('#approvemedia_animoverlay').css('opacity','0');
 		$('#approvemedia_animoverlay').css('width','0%');
 		if (proceed) {
 			eddie.putLou('','approvemedia('+id+')');
+			proceed = false;
+		}
+    }
+    
+     self.createnewitemDone = function(id) {
+		$('#createnewitem_animoverlay').css('opacity','0');
+		$('#createnewitem_animoverlay').css('width','0%');
+		if (proceed) {
+			eddie.putLou('','createnewitemwindow('+id+')');
 			proceed = false;
 		}
     }
@@ -123,8 +139,29 @@ var Itempage = function(options){
 		$('#approvemedianext_animoverlay').css('width','0%');
 		$('#disapprovemedianext_animoverlay').css('opacity','0');
 		$('#disapprovemedianext_animoverlay').css('width','0%');
+		$('#createnewitem_animoverlay').css('opacity','0');
+		$('#createnewitem_animoverlay').css('width','0%');
 		proceed = false;
-    }		
+    }	
+    
+  	self.propertychange = function(event) {
+  		var keyCode = ('which' in event) ? event.which : event.keyCode;
+  	 	if (keyCode==13) {
+  	 		var id = event.target.id;
+  	 		var value = $('#'+id).val();
+  			eddie.putLou('','setproperty('+id+','+value+')');
+   		}
+    }	
+    
+    self.propertyoptionchange = function(event,value) {
+      	var id = event.target.id;
+      	eddie.putLou('','setproperty('+id+','+value+')');
+	}
+	
+	self.redoscreenshots = function(event,value) {
+      	var id = event.target.id;
+      	eddie.putLou('','redoscreenshots('+id+','+value+')');
+	}
 		
 	return self;
 }

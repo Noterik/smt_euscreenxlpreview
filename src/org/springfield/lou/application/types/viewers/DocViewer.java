@@ -200,5 +200,11 @@ public class DocViewer extends ItemViewer implements ViewerInterface {
 		
 	}
 	
-
+	public String getCreateNewOptions(FsNode node) {
+		return null;
+	}
+	
+	public FsNode createNew(Screen s,String id,String item) {
+		return null;
+	}
 }
