@@ -1,5 +1,3 @@
-setUrlTrigger(/lou/euscreen/itempage.html,/lou/domain/euscreenxl/html5application/euscreenxlpreview)
-setUrlTrigger(/lou/euscreen/play.jsp,/lou/domain/euscreenxl/html5application/euscreenxlpreview)
 loadStyleSheet(screen,generic) // load the generic stylesheet
 setRole(screen,"searchscreen") // change the role of this screen to searchscreen
 loadContent(screen,login) // load the login dialog
