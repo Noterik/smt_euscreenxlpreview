@@ -64,18 +64,18 @@ public class TeaserViewer extends ItemViewer implements ViewerInterface {
 	}
 	
 	private static String getOverviewPanel(FsNode node) {
-		String body="<tr><td>Screenshot text<hr></td>";
+		String body="<div id=\"succsessMsgOnChange\" style=\"display: none;\">Your changes has been saved</div><tr><td>Screenshot text<hr></td>";
 		Boolean allowed = true;
 
 		if (allowed) {
-			body+="<th><input id=\""+node.getId()+"_teaser_title\" onkeyup=\"return components.itempage.propertychange(event)\" value=\""+node.getProperty("TitleSet_TitleSetInEnglish_title")+"\"><hr></th></tr>";
+			body+="<th><input class=\"ScreenShotText\" id=\""+node.getId()+"_teaser_title\" onkeyup=\"return components.itempage.propertychange(event)\" onkeydown=\"return components.itempage.countChar(this)\" maxlength=\"75\" value=\""+node.getProperty("TitleSet_TitleSetInEnglish_title")+"\">&nbsp Character left: <span id=\"charNum\"></span><hr></th></tr>";
 			FSList referparents = node.getReferParents();
 			if (referparents!=null) {
 				List<FsNode> nodes = referparents.getNodes();
 				if (nodes.size()>0) {
 					FsNode n = nodes.get(0);
 					FsNode parent = n.getParentNode();
-					System.out.println("YESSS="+parent.getId());
+
 					String id = parent.getId();
 					if (id.equals("highlights")) {
 						body+=getHighlightsOptions(node.getProperty("topic"),node.getProperty("identifier"),"topic");
@@ -84,8 +84,6 @@ public class TeaserViewer extends ItemViewer implements ViewerInterface {
 					}
 				}
 			}
-
-		
 		} else {
 			body+="<th>"+node.getProperty("TitleSet_TitleSetInEnglish_title")+"<hr></th></tr>";
 			body+="<tr><td>Topic<hr></td><th>"+node.getProperty("topic")+"<hr></th></tr>";
@@ -94,6 +92,7 @@ public class TeaserViewer extends ItemViewer implements ViewerInterface {
 		body+="<tr><td>Based on<hr></td><th>"+node.getProperty("basedon")+"<hr></th></tr>";
 		body+="<tr><td>Based on type <hr></td><th>"+node.getProperty("basedontype")+"<hr></th></tr>";
 		body+="<tr><td>Provider<hr></td><th>"+node.getProperty("provider")+"<hr></th></tr>";
+		//body+="<tr><td><input type=\"submit\" name=\"submit\" value=\"Save\"><hr></td><th></tr>";
 		return body;
 	}
 	

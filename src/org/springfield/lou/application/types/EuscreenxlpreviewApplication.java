@@ -890,6 +890,10 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 							m = Integer.parseInt(durArr[0]);
 							sec = Integer.parseInt(durArr[1]);
 						}
+						if(h == 0 && m == 0 && sec == 0){
+							m = 2;
+						}
+						
 						totalsecs = h*3600 + m*60 + sec;
 					}
 					body += "<tr>";
@@ -913,7 +917,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		ComponentInterface editor = getComponentManager().getComponent("screenshoteditor");
 		editor.putOnScope(s,"euscreenxlpreview", "show()");
 	}
-	
+	//Update From Mint
 	public void updateitemfromxml(Screen s, String id) {
 		System.out.println("Updateitem: "+id);
 		String uri = "/domain/euscreenxl/user/*/*"; // does this make sense, new way of mapping (daniel)
@@ -930,7 +934,6 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 				System.out.println("Updateitem: uter service is null");
 			}
 		}
-		
 	}
 	
 	private String setEdnaMapping(String screenshot) {

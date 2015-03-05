@@ -150,8 +150,20 @@ var Itempage = function(options){
   	 		var id = event.target.id;
   	 		var value = $('#'+id).val();
   			eddie.putLou('','setproperty('+id+','+value+')');
+  			$('#succsessMsgOnChange').show();
+  			setTimeout(function(){ $('#succsessMsgOnChange').hide() }, 4000);
+  			
    		}
-    }	
+    }
+    
+    self.countChar = function (val) {
+        var len = val.value.length;
+        if (len >= 76) {
+          val.value = val.value.substring(0, 75);
+        } else {
+          $('#charNum').text(75 - len);
+		}
+    };	
     
     self.propertyoptionchange = function(event,value) {
       	var id = event.target.id;

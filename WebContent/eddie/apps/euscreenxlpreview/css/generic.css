@@ -212,7 +212,7 @@ hr {
 #updateitemlink {
 	position:absolute;
 	width: 200px;
-	top: 630px;
+	top: 655px;
 	left: 55px;
 	font-size: 14px;
 	color: #6f9a19;
@@ -1156,3 +1156,20 @@ label {
     color: #8e463d;
 }
 
+.ScreenShotText {
+	width: 740px;
+}
+
+#succsessMsgOnChange{
+	width: 300px;
+	z-index: 92;
+	height: 40px;
+	border: 1px solid black;
+	padding-top: 20px;
+	color: green;
+	font-size: 16px;
+	position: absolute;
+	background: #FFFFFF;
+	border-radius: 14px;
+	left: 39%;
+}
