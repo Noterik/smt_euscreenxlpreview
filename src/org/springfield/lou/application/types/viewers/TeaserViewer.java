@@ -81,6 +81,8 @@ public class TeaserViewer extends ItemViewer implements ViewerInterface {
 						body+=getHighlightsOptions(node.getProperty("topic"),node.getProperty("identifier"),"topic");
 					} else if (id.equals("inthenews")) {
 						body+=getInthenewsOptions(node.getProperty("topic"),node.getProperty("identifier"),"topic");
+					} else if (id.equals("general")) {
+						//Don't show any options
 					}
 				}
 			}

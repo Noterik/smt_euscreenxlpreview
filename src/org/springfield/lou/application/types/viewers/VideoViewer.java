@@ -324,9 +324,16 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 	}
 
 	public String getCreateNewOptions(FsNode node) {
-		String body="<div id=\"createbutton1\" onmouseup=\"eddie.putLou('', 'createnewitem(teaser,"+node.getId()+",highlights)');\"><br />Create Highlight teaser</div>";
-		body+="<div id=\"createbutton2\" onmouseup=\"eddie.putLou('', 'createnewitem(teaser,"+node.getId()+",inthenews)');\"><br />Create InTheNews teaser</div>";
-		body+="<div id=\"createcancel\" onmouseup=\"eddie.putLou('', 'createcancel()');\"><br />Cancel</div>";
+		String body = null;
+		if (!LazyHomer.inDeveloperMode()) {
+			body="<div id=\"createbutton1\" onmouseup=\"eddie.putLou('', 'createnewitem(teaser,"+node.getId()+",highlights)');\"><br />Create Highlight teaser</div>";
+			body+="<div id=\"createbutton2\" onmouseup=\"eddie.putLou('', 'createnewitem(teaser,"+node.getId()+",inthenews)');\"><br />Create InTheNews teaser</div>";
+			body+="<div id=\"createbutton3\" onmouseup=\"eddie.putLou('', 'createnewitem(teaser,"+node.getId()+",general)');\"><br />Create General teaser</div>";
+			body+="<div id=\"createcancel\" onmouseup=\"eddie.putLou('', 'createcancel()');\"><br />Cancel</div>";
+		}else{
+			body+="<div id=\"createcancel\" onmouseup=\"eddie.putLou('', 'createcancel()');\"><br />Cancel</div>";
+		}
+		
 		return body;
 	}
 	

@@ -148,9 +148,11 @@
 			 <exclude name="WEB-INF/web.xml" />
 			</fileset>
 		</war>
+		<!--
         <exec executable="/bin/bash">
         <arg value="/springfield/tomcat/bin/noterikcopy_4b.sh"/>
         </exec>
+        -->
 	</target>
 	
 </project>
