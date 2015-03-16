@@ -926,12 +926,31 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		System.out.println("Updateitem: nodes size "+nodes.size());
 		if (nodes!=null && nodes.size()>0) {
 			FsNode itemnode = (FsNode)nodes.get(0);
-			ServiceInterface uter = ServiceManager.getService("uter","10.88.8.224");
+			ServiceInterface uter = ServiceManager.getService("uter","10.88.8.34");//10.88.8.34 - C6
 			if (uter!=null) {
 				System.out.println("Updateitem: sending request to uter.");
 				uter.put(itemnode.getPath(), null, null);
 			}else{
 				System.out.println("Updateitem: uter service is null");
+			}
+		}
+	}
+	
+	//Reupload video file from FTP
+	public void signalReUpload(Screen s, String id) {
+		System.out.println("ReUploaditem: "+id);
+		String uri = "/domain/euscreenxl/user/*/*"; // does this make sense, new way of mapping (daniel)
+		FSList fslist = FSListManager.get(uri);
+		List<FsNode> nodes = fslist.getNodesFiltered(id.toLowerCase()); // find the item
+		System.out.println("Updateitem: nodes size "+nodes.size());
+		if (nodes!=null && nodes.size()>0) {
+			FsNode itemnode = (FsNode)nodes.get(0);
+			ServiceInterface uter = ServiceManager.getService("uter","10.88.8.34");//10.88.8.34 - C6
+			if (uter!=null) {
+				System.out.println("ReUploaditem: sending request to uter.");
+				uter.post(itemnode.getPath(), null, null);
+			}else{
+				System.out.println("ReUploaditem: uter service is null");
 			}
 		}
 	}

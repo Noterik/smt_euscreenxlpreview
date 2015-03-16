@@ -182,7 +182,7 @@ hr {
 #reuploadVideoFile {
 	position:absolute;
 	width: 200px;
-	top: 660px;
+	top: 650px;
 	left: 55px;
 	font-size: 14px;
 	color: #6f9a19;
@@ -565,16 +565,6 @@ hr {
 }
 
 #approvemedia_animoverlay {
-	position:relative;
-	top: -20px;
-	height : 20px;
-	width : 0%;
-	background-color : #00ff00;
-	z-index:210;
-	opacity: 0;
-}
-
-#reuploadVideoFile_animoverlay {
 	position:relative;
 	top: -20px;
 	height : 20px;

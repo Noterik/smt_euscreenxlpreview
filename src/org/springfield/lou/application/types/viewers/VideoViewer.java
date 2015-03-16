@@ -85,6 +85,7 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 				if (allowed && (publicstate==null || publicstate.equals("") || publicstate.equals("false"))) {
 					body += "<div onmouseup=\"eddie.putLou('','updateitemfromxml("+videonode.getId()+")');\" id=\"updateitemlink\">Update this video from Mint</div>";
 				}
+				body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"eddie.putLou('','signalreupload("+videonode.getId()+")');\" id=\"reuploadVideoFile\">Update video file<div id=\"reuploadVideoFile_animoverlay\"></div></div>";
 			}
 		}
 		
@@ -320,6 +321,7 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 			}
 		}
 		body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"return components.itempage.createnewitem('"+id+"')\" id=\"createnewitem\">Create new<div id=\"createnewitem_animoverlay\"></div></div>";
+		
 		return body;
 	}
 
