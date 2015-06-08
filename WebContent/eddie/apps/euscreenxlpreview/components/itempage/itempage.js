@@ -23,7 +23,7 @@ var Itempage = function(options){
 						$('#itempage').css('display','none');
 						break;
 					case 'borderorange':
-						$('#video1').css('border','4px ridge #ff8888');
+						$('#video1').css('border','4px ridge #ff9b3d');
 						break;
 					case 'borderred':
 						$('#video1').css('border','4px ridge #ff0000');
@@ -31,8 +31,11 @@ var Itempage = function(options){
 					case 'borderwhite':
 						$('#video1').css('border','4px ridge #ffffff');
 						break;
+					case 'borderblack':
+						$('#video1').css('border','4px ridge #000000');
+						break;
 					case 'borderblue':
-						$('#video1').css('border','4px ridge #4444ff');
+						$('#video1').css('border','4px ridge #0000FF');
 						break;
 					case 'borderyellow':
 						$('#video1').css('border','4px ridge #ffe63e');
@@ -120,6 +123,7 @@ var Itempage = function(options){
 			proceed = false;
 		}
     }
+    
     
     self.disapprovemedianextDone = function(id,nextid) {
 		$('#disapprovemedianext_animoverlay').css('opacity','0');

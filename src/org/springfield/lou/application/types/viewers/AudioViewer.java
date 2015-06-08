@@ -177,15 +177,26 @@ public class AudioViewer extends ItemViewer implements ViewerInterface {
 			// do we have really videos ? ifso lets display
 			if (hasRaws!=null && hasRaws.equals("true")) {
 				// if we have a screenshot if so display it if not not show i fixed image.
+				String publicstate = n.getProperty("public");
+				String selclass = "itemimg";
+				
+				if (publicstate==null || publicstate.equals("")) {
+					selclass = "itemimg_yellow";
+				} else if (publicstate.equals("true")) {
+					selclass = "itemimg";
+				} else  if (publicstate.equals("false")) {
+					selclass = "itemimg_orange";
+				}
+				
 				if (screenshot!=null && !screenshot.equals("")) {
-					screenshot = setEdnaMapping(screenshot);
-					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
-				} else {
-					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/audiofile.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+					screenshot = setEdnaMapping(screenshot);	
+					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"" + selclass + "\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+				}else {
+					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"" + selclass + "\" src=\"http://images1.noterik.com/audiofile.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				}
 			} else {
 				// so we have a broken audio lets show them
-				body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/audiofile.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+				body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg_red\" src=\"http://images1.noterik.com/audiofile.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 			}
 	}
 	

@@ -182,7 +182,7 @@ hr {
 #reuploadVideoFile {
 	position:absolute;
 	width: 200px;
-	top: 660px;
+	top: 680px;
 	left: 55px;
 	font-size: 14px;
 	color: #6f9a19;
@@ -372,10 +372,10 @@ hr {
 
 #audio1 {
 	position:absolute;
-	left: 30px;
+	left: 18px;
 	top: 30px;
-	width: 320px;
-	height: 240px;
+	width: 245px;
+	height: 30px;
 }
 
 #itempageleft {
@@ -392,6 +392,7 @@ hr {
 	width:278px;
 	z-index:13;
 	border:1px solid #dddddd;
+	overflow-y: scroll;
 }
 
 #itemcommands {
@@ -551,6 +552,32 @@ hr {
 	transition: all 0.4s ease;
 }
 
+.itemimg_black {
+	position:relative;
+	top: 0px;
+	left: 5%;
+	right: 5%;
+	width: 90%;
+	border: 4px ridge black;
+	-webkit-transition: all 0.4s ease;
+	-moz-transition: all 0.4s ease;
+	-o-transition: all 0.4s ease;
+	transition: all 0.4s ease;
+}
+
+.itemimg_orange {
+	position:relative;
+	top: 0px;
+	left: 5%;
+	right: 5%;
+	width: 90%;
+	border: 4px ridge #ff9b3d;
+	-webkit-transition: all 0.4s ease;
+	-moz-transition: all 0.4s ease;
+	-o-transition: all 0.4s ease;
+	transition: all 0.4s ease;
+}
+
 .itemimg_yellow {
 	position:relative;
 	top: 0px;
@@ -630,7 +657,7 @@ hr {
 	left: 5%;
 	right: 5%;
 	width: 90%;
-	border: 4px ridge #00ffff;
+	border: 4px ridge #0000FF;
 	-webkit-transition: all 0.4s ease;
 	-moz-transition: all 0.4s ease;
 	-o-transition: all 0.4s ease;
@@ -1150,7 +1177,7 @@ label {
     
 }
 
-#createbutton2 {
+#createbutton3 {
 	position: absolute;
     background-color:#b4e088;
     top: 50px;
@@ -1163,7 +1190,7 @@ label {
     color: #5b7d3e;
 }
 
-#createbutton3 {
+#createbutton2 {
 	position: absolute;
     background-color:#b4e088;
     top: 50px;
@@ -1205,4 +1232,34 @@ label {
 	background: #FFFFFF;
 	border-radius: 14px;
 	left: 39%;
+}
+
+#colorLabelC {
+	color:blue;
+}
+
+#colorLabelO {
+	color:orange;
+}
+
+#colorLabelL {
+	color:green;
+}
+
+#colorLabelR {
+	color:red;
+}
+
+#colorLabelS {
+	color:purple;
+}
+
+#colorLabelU {
+	color: #8AE65C;
+}
+
+#downloadColourSchema:hover {
+	text-decoration: underline;
+	cursor: pointer;
+    cursor: hand;
 }

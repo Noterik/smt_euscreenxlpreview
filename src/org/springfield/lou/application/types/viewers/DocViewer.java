@@ -184,20 +184,76 @@ public class DocViewer extends ItemViewer implements ViewerInterface {
 			// do we have really videos ? ifso lets display
 			if (hasRaws!=null && hasRaws.equals("true")) {
 				// if we have a screenshot if so display it if not not show i fixed image.
+				String publicstate = n.getProperty("public");
+				String selclass = "itemimg";
+				if (publicstate==null || publicstate.equals("")) {
+					selclass = "itemimg_yellow";
+				} else if (publicstate.equals("true")) {
+					selclass = "itemimg";
+				} else  if (publicstate.equals("false")) {
+					selclass = "itemimg_orange";
+				}
+				
 				if (screenshot!=null && !screenshot.equals("")) {
 					screenshot = setEdnaMapping(screenshot);
-					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\""+selclass+"\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				} else {
-					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/pdf.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\""+selclass+"\" src=\"http://images1.noterik.com/pdf.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				}
 			} else {
 				// so we have a broken video lets show them
-				body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/brokendoc.jpeg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+				body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg_red\" src=\"http://images1.noterik.com/brokendoc.jpeg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 			}
 	}
 	
+	
 	public void showPreview(Html5ApplicationInterface app,Screen s,String path) {
+		String body = "<div id=\"copyrightBox\" style=\"display:none;\"><span class=\"dismiss\"><a title=\"dismiss this notification\">x</a></span><div>EUscreen offers thousands of items of film and television clips, photos and texts provided by audiovisual archives from all over Europe.<br/><br/>Are you interested in using a clip from our collection? Please click <a href='#'>here to contact the provider</a> of this clip and ask for the rights to reuse it.</div></div>";
+
+		FsNode docsnode = Fs.getNode(path);
+		String publicstate =null;
+		String rawvideo = null;
+		String screenshot  = null;
+		if (docsnode!=null) {
+			publicstate = docsnode.getProperty("public");
+			rawvideo = docsnode.getProperty("hasRaws");
+			screenshot = docsnode.getProperty("screenshot");
+			boolean allowed = s.checkNodeActions(docsnode, "read");
 		
+			if (allowed) {
+				body += getItemCommands(s,path,docsnode.getId());
+			}
+		}
+		app.setContentOnScope(s,"itempageleft",body);
+		setDocBorderOnItemPage(app, s, rawvideo, publicstate, screenshot);
+
+	}
+	
+	public static void setDocBorder(Html5ApplicationInterface app,Screen s,String publicstate, String screenshot) {
+		ComponentInterface itempage = app.getComponentManager().getComponent("itempage");
+		
+			if (publicstate==null || publicstate.equals("")) {
+				if(screenshot!=null && !screenshot.equals("")){
+					itempage.putOnScope(s,"euscreenxlpreview", "borderyellow()");
+				}else {
+					itempage.putOnScope(s,"euscreenxlpreview", "borderblue()");
+				}
+			} else if (publicstate.equals("true")) {
+				itempage.putOnScope(s,"euscreenxlpreview", "borderwhite()");
+			} else  if (publicstate.equals("false")) {
+				itempage.putOnScope(s,"euscreenxlpreview", "borderorange()");
+			}
+	}
+	
+	public static void setDocBorderOnItemPage(Html5ApplicationInterface app,Screen s,String hasRaws, String publicstate, String screenshot) {
+		ComponentInterface itempage = app.getComponentManager().getComponent("itempage");
+		System.out.println("WE ARE HERE VIDEO VIEWER!");
+		System.out.println("I am RAW:" + hasRaws);
+		if (hasRaws!=null && hasRaws.equals("true")) {
+			setDocBorder(app,s,publicstate,screenshot);
+		}else{
+			itempage.putOnScope(s,"euscreenxlpreview", "borderred()");
+		}
 	}
 	
 	public String getCreateNewOptions(FsNode node) {

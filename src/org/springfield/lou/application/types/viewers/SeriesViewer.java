@@ -96,6 +96,9 @@ public class SeriesViewer extends ItemViewer implements ViewerInterface {
 		body+="<tr><td>Publisherbroadcaster<hr></td><th>"+node.getProperty("publisherbroadcaster")+"<hr></th></tr>";
 		body+="<tr><td>First Broadcastchannel<hr></td><th>"+node.getProperty("firstBroadcastChannel")+"<hr></th></tr>";
 		body+="<tr><td>Provider<hr></td><th>"+node.getProperty("provider")+"<hr></th></tr>";
+		body+="<tr><td>Aspect ratio<hr></td><th>"+node.getProperty("TechnicalInformation_aspectRatio")+"<hr></th></tr>";
+		body+="<tr><td>Local keywords<hr></td><th>"+node.getProperty("localKeyword")+"<hr></th></tr>";
+		body+="<tr><td>Information<hr></td><th>"+node.getProperty("information")+"<hr></th></tr>";
 		return body;
 	}
 	
@@ -182,21 +185,23 @@ public class SeriesViewer extends ItemViewer implements ViewerInterface {
 		String type=n.getName();
 		String path = n.getPath();
 
+		String publicstate = n.getProperty("public");
+		String selclass = "itemimg";
+		if (publicstate==null || publicstate.equals("")) {
+			selclass = "itemimg_yellow";
+		} else if (publicstate.equals("true")) {
+			selclass = "itemimg";
+		} else  if (publicstate.equals("false")) {
+			selclass = "itemimg_orange";
+		}
+		
 		// if we have a screenshot if so display it if not not show i fixed image.
 		if (screenshot!=null && !screenshot.equals("")) {
 			screenshot = setEdnaMapping(screenshot);
-			String publicstate = n.getProperty("public");
-			String selclass = "itemimg";
-			if (publicstate==null || publicstate.equals("")) {
-				selclass = "itemimg_yellow";
-			} else if (publicstate.equals("true")) {
-				selclass = "itemimg";
-			} else  if (publicstate.equals("false")) {
-				selclass = "itemimg_red";
-			}
 			body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\""+selclass+"\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
-		} else {
-			body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itempimg\" width=\"320\" src=\"http://images1.noterik.com/teaser.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+		}
+			else {
+			body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\""+selclass+"\" width=\"320\" src=\"http://images1.noterik.com/teaser.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 		}
 	}
 	
@@ -209,12 +214,15 @@ public class SeriesViewer extends ItemViewer implements ViewerInterface {
 		// if its a video we need its rawvideo node for where the file is.
 		FsNode seriesnode = Fs.getNode(path);
 		String publicstate =null;
+		String rawvideo = null;
+		String screenshot = null;
 		if (seriesnode!=null) {
 			publicstate = seriesnode.getProperty("public");
+			rawvideo = seriesnode.getProperty("hasRaws");
 			boolean allowed = s.checkNodeActions(seriesnode, "read");
 			//allowed = true;
 			// nice lets set the preview image
-			String screenshot  = seriesnode.getProperty("screenshot");
+			screenshot  = seriesnode.getProperty("screenshot");
 			screenshot = "http://images1.noterik.com/series.png";
 			if (screenshot!=null && !screenshot.equals("")) {
 				body += "<div id=\"screenshotlabel\">SELECTED MEDIA THUMBNAIL</div>";
@@ -227,6 +235,8 @@ public class SeriesViewer extends ItemViewer implements ViewerInterface {
 					body+="<img id=\"video1\" src=\""+screenshot+"\" />";
 					body +="<div id=\"screenshotdiv\"><img id=\"screenshot\" src=\""+screenshot+"\" /></div>";
 				}
+			}else {
+				body +="<div id=\"screenshotdiv\"><img id=\"screenshot\" src=\""+"http://images1.noterik.com/teaser.png"+"\" /></div>";
 			}
 			if (LazyHomer.inDeveloperMode()) {
 				body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreenxl.eu/item.html?id="+seriesnode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";
@@ -239,23 +249,40 @@ public class SeriesViewer extends ItemViewer implements ViewerInterface {
 		}
 		
 		app.setContentOnScope(s,"itempageleft",body);
-		setVideoBorder(app,s,publicstate); // what do we do here instead, show the screenshot again ?
-		
+		//setVideoBorder(app,s,publicstate); // what do we do here instead, show the screenshot again ?
+		setVideoBorderOnItemPage(app, s, rawvideo, publicstate, screenshot);
+
 		ComponentInterface itempage = app.getComponentManager().getComponent("itempage");
 		itempage.putOnScope(s,"euscreenxlpreview", "copyrightvideo()");
 	
 	}
 	
-	public static void setVideoBorder(Html5ApplicationInterface app,Screen s,String publicstate) {
+	public static void setVideoBorder(Html5ApplicationInterface app,Screen s,String publicstate, String screenshot) {
 		ComponentInterface itempage = app.getComponentManager().getComponent("itempage");
-		if (publicstate==null || publicstate.equals("")) {
-			itempage.putOnScope(s,"euscreenxlpreview", "borderyellow()");
-		} else if (publicstate.equals("true")) {
-			itempage.putOnScope(s,"euscreenxlpreview", "borderwhite()");
-		} else  if (publicstate.equals("false")) {
-			itempage.putOnScope(s,"euscreenxlpreview", "borderred()");
-		}
+//		if(screenshot!=null && !screenshot.equals("")){
+			if (publicstate==null || publicstate.equals("")) {
+				itempage.putOnScope(s,"euscreenxlpreview", "borderyellow()");
+			} else if (publicstate.equals("true")) {
+				itempage.putOnScope(s,"euscreenxlpreview", "borderwhite()");
+			} else  if (publicstate.equals("false")) {
+				itempage.putOnScope(s,"euscreenxlpreview", "borderorange()");
+			}
+//		}else {
+//			itempage.putOnScope(s,"euscreenxlpreview", "borderblue()");
+//		}
 	}
+	
+	public static void setVideoBorderOnItemPage(Html5ApplicationInterface app,Screen s,String hasRaws, String publicstate, String screenshot) {
+		ComponentInterface itempage = app.getComponentManager().getComponent("itempage");
+		System.out.println("WE ARE HERE SERIES VIEWER!");
+		System.out.println("I am RAW:" + hasRaws);
+		//if (hasRaws!=null && hasRaws.equals("true")) {
+			setVideoBorder(app,s,publicstate,screenshot);
+		//}else{
+//			itempage.putOnScope(s,"euscreenxlpreview", "borderred()");
+//		}
+	}
+	
 	
 	public String getCreateNewOptions(FsNode node) {
 		return null;

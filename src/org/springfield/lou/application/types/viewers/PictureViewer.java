@@ -179,21 +179,26 @@ public class PictureViewer extends ItemViewer implements ViewerInterface {
 		String type=n.getName();
 		String path = n.getPath();
 
+		String publicstate = n.getProperty("public");
+		String selclass = "itemimg";
+		if (publicstate==null || publicstate.equals("")) {
+			selclass = "itemimg_yellow";
+		} else if (publicstate.equals("true")) {
+			selclass = "itemimg";
+		} else  if (publicstate.equals("false")) {
+			selclass = "itemimg_orange";
+		}
+		
 		// if we have a screenshot if so display it if not not show i fixed image.
 		if (screenshot!=null && !screenshot.equals("")) {
 			screenshot = setEdnaMapping(screenshot);
-			String publicstate = n.getProperty("public");
-			String selclass = "itemimg";
-			if (publicstate==null || publicstate.equals("")) {
-				selclass = "itemimg_yellow";
-			} else if (publicstate.equals("true")) {
-				selclass = "itemimg";
-			} else  if (publicstate.equals("false")) {
-				selclass = "itemimg_red";
-			}
+		
 			body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\""+selclass+"\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
-		} else {
-			body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itempimg\" width=\"320\" src=\"http://images1.noterik.com/teaser.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+		} else if ((publicstate!=null && !publicstate.equals(""))&& (publicstate.equals("true") || publicstate.equals("false"))) {
+			body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\""+selclass+"\" width=\"320\" src=\"http://images1.noterik.com/teaser.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+
+		}else {
+			body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\""+"itemimg_blue"+"\" width=\"320\" src=\"http://images1.noterik.com/teaser.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 		}
 	}
 
@@ -206,12 +211,15 @@ public class PictureViewer extends ItemViewer implements ViewerInterface {
 		// if its a video we need its rawvideo node for where the file is.
 		FsNode picturenode = Fs.getNode(path);
 		String publicstate =null;
+		String hasRaws = null;
+		String screenshot = null;
 		if (picturenode!=null) {
 			publicstate = picturenode.getProperty("public");
+			hasRaws = picturenode.getProperty("hasRaws");
 			boolean allowed = s.checkNodeActions(picturenode, "read");
 			//allowed = true;
 			// nice lets set the preview image
-			String screenshot  = picturenode.getProperty("screenshot");
+			screenshot  = picturenode.getProperty("screenshot");
 			body +="<img id=\"video1\" src=\""+screenshot+"\" />";
 			body +="<div id=\"screenshotdiv\"><img id=\"screenshot\" src=\""+screenshot+"\" /></div>";
 			if (LazyHomer.inDeveloperMode()) {
@@ -225,8 +233,8 @@ public class PictureViewer extends ItemViewer implements ViewerInterface {
 		}
 		
 		app.setContentOnScope(s,"itempageleft",body);
-		setVideoBorder(app,s,publicstate); // what do we do here instead, show the screenshot again ?
-		
+		//setVideoBorder(app,s,publicstate); // what do we do here instead, show the screenshot again ?
+		setVideoBorderOnItemPage(app, s, hasRaws, publicstate, screenshot);
 		ComponentInterface itempage = app.getComponentManager().getComponent("itempage");
 		itempage.putOnScope(s,"euscreenxlpreview", "copyrightvideo()");
 	}
@@ -264,13 +272,29 @@ public class PictureViewer extends ItemViewer implements ViewerInterface {
 		return null;
 	}
 	
-	public static void setVideoBorder(Html5ApplicationInterface app,Screen s,String publicstate) {
+	public static void setVideoBorder(Html5ApplicationInterface app,Screen s,String publicstate, String screenshot) {
 		ComponentInterface itempage = app.getComponentManager().getComponent("itempage");
-		if (publicstate==null || publicstate.equals("")) {
-			itempage.putOnScope(s,"euscreenxlpreview", "borderyellow()");
-		} else if (publicstate.equals("true")) {
-			itempage.putOnScope(s,"euscreenxlpreview", "borderwhite()");
-		} else  if (publicstate.equals("false")) {
+			if (publicstate==null || publicstate.equals("")) {
+				if(screenshot!=null && !screenshot.equals("")){
+					itempage.putOnScope(s,"euscreenxlpreview", "borderyellow()");
+				}else {
+					itempage.putOnScope(s,"euscreenxlpreview", "borderblue()");
+				}
+			} else if (publicstate.equals("true")) {
+				itempage.putOnScope(s,"euscreenxlpreview", "borderwhite()");
+			} else  if (publicstate.equals("false")) {
+				itempage.putOnScope(s,"euscreenxlpreview", "borderorange()");
+			}
+
+	}
+	
+	public static void setVideoBorderOnItemPage(Html5ApplicationInterface app,Screen s,String hasRaws, String publicstate, String screenshot) {
+		ComponentInterface itempage = app.getComponentManager().getComponent("itempage");
+		System.out.println("WE ARE HERE PICTURE VIEWER!");
+		System.out.println("I am RAW:" + hasRaws);
+		if (hasRaws!=null && hasRaws.equals("true")) {
+			setVideoBorder(app,s,publicstate, screenshot);
+		}else{
 			itempage.putOnScope(s,"euscreenxlpreview", "borderred()");
 		}
 	}

@@ -57,13 +57,17 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 		
 		// if its a video we need its rawvideo node for where the file is.
 		FsNode videonode = Fs.getNode(path);
-		String publicstate =null;
+		String publicstate = null;
+		String rawvideo = null;
+		String screenshot = null;
 		if (videonode!=null) {
 			publicstate = videonode.getProperty("public");
+			rawvideo = videonode.getProperty("hasRaws");
+			screenshot  = videonode.getProperty("screenshot");
 			boolean allowed = s.checkNodeActions(videonode, "read");
 			//allowed = true;
 			// nice lets set the preview image
-			String screenshot  = videonode.getProperty("screenshot");
+
 			if (screenshot!=null && !screenshot.equals("")) {
 				body += "<div id=\"screenshotlabel\">SELECTED MEDIA THUMBNAIL</div>";
 				screenshot = setEdnaMapping(screenshot);
@@ -73,6 +77,8 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 				} else {
 					body +="<div id=\"screenshotdiv\"><img id=\"screenshot\" src=\""+screenshot+"\" /></div>";
 				}
+			}else{
+				body +="<div id=\"screenshotdiv\"><img id=\"screenshot\" src=\""+"http://images1.noterik.com/nothumb.png"+"\" /></div>";
 			}
 			if (LazyHomer.inDeveloperMode()) {
 				body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreenxl.eu/item.html?id="+videonode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";
@@ -85,23 +91,42 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 				if (allowed && (publicstate==null || publicstate.equals("") || publicstate.equals("false"))) {
 					body += "<div onmouseup=\"eddie.putLou('','updateitemfromxml("+videonode.getId()+")');\" id=\"updateitemlink\">Update this video from Mint</div>";
 				}
-				body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"eddie.putLou('','signalreupload("+videonode.getId()+")');\" id=\"reuploadVideoFile\">Update video file<div id=\"reuploadVideoFile_animoverlay\"></div></div>";
+				//Still on progress
+				//body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"eddie.putLou('','signalreupload("+videonode.getId()+")');\" id=\"reuploadVideoFile\">Update video file<div id=\"reuploadVideoFile_animoverlay\"></div></div>";
 			}
 		}
 		
 		app.setContentOnScope(s,"itempageleft",body);
-		setVideoBorder(app,s,publicstate);
+		//setVideoBorder(app,s,publicstate);
+		
+		setVideoBorderOnItemPage(app, s, rawvideo, publicstate, screenshot);
 		ComponentInterface itempage = app.getComponentManager().getComponent("itempage");
 		itempage.putOnScope(s,"euscreenxlpreview", "copyrightvideo()");
 	}
 
-	public static void setVideoBorder(Html5ApplicationInterface app,Screen s,String publicstate) {
+	public static void setVideoBorder(Html5ApplicationInterface app,Screen s,String publicstate, String screenshot) {
 		ComponentInterface itempage = app.getComponentManager().getComponent("itempage");
-		if (publicstate==null || publicstate.equals("")) {
-			itempage.putOnScope(s,"euscreenxlpreview", "borderyellow()");
-		} else if (publicstate.equals("true")) {
-			itempage.putOnScope(s,"euscreenxlpreview", "borderwhite()");
-		} else  if (publicstate.equals("false")) {
+		
+			if (publicstate==null || publicstate.equals("")) {	
+				if(screenshot!=null && !screenshot.equals("")){
+					itempage.putOnScope(s,"euscreenxlpreview", "borderyellow()");
+				}else {
+					itempage.putOnScope(s,"euscreenxlpreview", "borderblue()");
+				}
+			} else if (publicstate.equals("true")) {
+				itempage.putOnScope(s,"euscreenxlpreview", "borderwhite()");
+			} else  if (publicstate.equals("false")) {
+				itempage.putOnScope(s,"euscreenxlpreview", "borderorange()");
+			}
+	}
+	
+	public static void setVideoBorderOnItemPage(Html5ApplicationInterface app,Screen s,String hasRaws, String publicstate, String screenshot) {
+		ComponentInterface itempage = app.getComponentManager().getComponent("itempage");
+		System.out.println("WE ARE HERE VIDEO VIEWER!");
+		System.out.println("I am RAW:" + hasRaws);
+		if (hasRaws!=null && hasRaws.equals("true")) {
+			setVideoBorder(app,s,publicstate, screenshot);
+		}else{
 			itempage.putOnScope(s,"euscreenxlpreview", "borderred()");
 		}
 	}
@@ -179,6 +204,9 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 		body+="<tr><td>Publisherbroadcaster<hr></td><th>"+node.getProperty("publisherbroadcaster")+"<hr></th></tr>";
 		body+="<tr><td>First Broadcastchannel<hr></td><th>"+node.getProperty("firstBroadcastChannel")+"<hr></th></tr>";
 		body+="<tr><td>Provider<hr></td><th>"+node.getProperty("provider")+"<hr></th></tr>";
+		body+="<tr><td>Aspect ratio<hr></td><th>"+node.getProperty("TechnicalInformation_aspectRatio")+"<hr></th></tr>";
+		body+="<tr><td>Local keywords<hr></td><th>"+node.getProperty("localKeyword")+"<hr></th></tr>";
+		body+="<tr><td>Information<hr></td><th>"+node.getProperty("information")+"<hr></th></tr>";
 		return body;
 	}
 	
@@ -276,25 +304,29 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 	
 			// do we have really videos ? ifso lets display
 			if (hasRaws!=null && hasRaws.equals("true")) {
+				
+				String publicstate = n.getProperty("public");
+				String selclass = "itemimg";
+				if (publicstate==null || publicstate.equals("")) {
+					selclass = "itemimg_yellow";
+				} else if (publicstate.equals("true")) {
+					selclass = "itemimg";
+				} else  if (publicstate.equals("false")) {
+					selclass = "itemimg_orange";
+				}
+				
 				// if we have a screenshot if so display it if not not show i fixed image.
 				if (screenshot!=null && !screenshot.equals("")) {
 					screenshot = setEdnaMapping(screenshot);
-					String publicstate = n.getProperty("public");
-					String selclass = "itemimg";
-					if (publicstate==null || publicstate.equals("")) {
-						selclass = "itemimg_yellow";
-					} else if (publicstate.equals("true")) {
-						selclass = "itemimg";
-					} else  if (publicstate.equals("false")) {
-						selclass = "itemimg_red";
-					}
 					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\""+selclass+"\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
-				} else {
-					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itempimg\" width=\"320\" src=\"http://images1.noterik.com/nothumb.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+				} else if((publicstate!=null && !publicstate.equals(""))&& (publicstate.equals("true") || publicstate.equals("false"))) {
+					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\""+selclass+"\" width=\"320\" src=\"http://images1.noterik.com/nothumb.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+				}else {
+					body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\""+"itemimg_blue"+"\" width=\"320\" src=\"http://images1.noterik.com/nothumb.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 				}
 			} else {
 				// so we have a broken video lets show them
-				body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itempimg\" width=\"320\" src=\"http://images1.noterik.com/brokenvideo.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+				body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg_red\" width=\"320\" src=\"http://images1.noterik.com/brokenvideo.jpg\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 			}
 	}
 	
@@ -330,7 +362,7 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 		if (!LazyHomer.inDeveloperMode()) {
 			body="<div id=\"createbutton1\" onmouseup=\"eddie.putLou('', 'createnewitem(teaser,"+node.getId()+",highlights)');\"><br />Create Highlight teaser</div>";
 			body+="<div id=\"createbutton2\" onmouseup=\"eddie.putLou('', 'createnewitem(teaser,"+node.getId()+",inthenews)');\"><br />Create InTheNews teaser</div>";
-			body+="<div id=\"createbutton3\" onmouseup=\"eddie.putLou('', 'createnewitem(teaser,"+node.getId()+",general)');\"><br />Create General teaser</div>";
+			//body+="<div id=\"createbutton3\" onmouseup=\"eddie.putLou('', 'createnewitem(teaser,"+node.getId()+",general)');\"><br />Create General teaser</div>";
 			body+="<div id=\"createcancel\" onmouseup=\"eddie.putLou('', 'createcancel()');\"><br />Cancel</div>";
 		}else{
 			body+="<div id=\"createcancel\" onmouseup=\"eddie.putLou('', 'createcancel()');\"><br />Cancel</div>";

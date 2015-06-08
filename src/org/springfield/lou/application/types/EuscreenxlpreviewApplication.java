@@ -610,16 +610,36 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	private void setItemStateOptions(Screen s,String itemstate, List<FsNode>nodes) {
 		FSSets sets = new FSSets(nodes,"public",true);
 		String body = "<select id=\"searchinput_datasource\" onchange=\"components.searchinput.setDataSource(this.options[this.selectedIndex].value)\">";
-		if (!itemstate.equals("all")) body += "<option value=\""+itemstate+"\">"+itemstate+" ("+sets.getSetSize(itemstate)+")</option>";
+		String nameOnSearch = null;
+		if (!itemstate.equals("all")) {
+			if(itemstate.equals("false")) {
+				nameOnSearch = "rejected by CP";
+			}else if (itemstate.equals("true")) {
+				nameOnSearch = "approved by CP";
+			}else{
+				nameOnSearch = itemstate;
+			}
+			body += "<option value=\""+itemstate+"\">"+nameOnSearch+" ("+sets.getSetSize(itemstate)+")</option>";
+		}
+		
 		body += "<option value=\"all\">all ("+nodes.size()+")</option>";
+		String name = null;
 		for (Iterator<String> iter = sets.getKeys() ; iter.hasNext(); ) {
 			String dname = iter.next();	
 			int size = sets.getSetSize(dname);
-			body += "<option value=\""+dname+"\">"+dname+" ("+size+")</option>";
+			if(dname.equals("false")) {
+				name = "rejected by CP";
+			}else if (dname.equals("true")) {
+				name = "approved by CP";
+			}else{
+				name = dname;
+			}
+			body += "<option value=\""+dname+"\">"+name+" ("+size+")</option>";
 		}
 		body +="</select>";
 		setContentOnScope(s,"searchinput_itemstate", body);
 	}
+	
 	
 	/*
 	 * update the screen's mediatype element
@@ -755,8 +775,9 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		if (nodes!=null && nodes.size()>0) {
 			FsNode node = (FsNode)nodes.get(0);
 			Fs.setProperty(node.getPath(),"public","true");
-			node.setProperty("public","true");	
-			VideoViewer.setVideoBorder(this,s,"true");
+			node.setProperty("public","true");
+			String screenshot = node.getProperty("screenshot");
+			VideoViewer.setVideoBorder(this,s,"true",screenshot);
 		}
 	}
 	
@@ -772,7 +793,8 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			FsNode node = (FsNode)nodes.get(0);
 			Fs.setProperty(node.getPath(),"public","true");
 			node.setProperty("public","true");	
-			VideoViewer.setVideoBorder(this,s,"true");
+			String screenshot = node.getProperty("screenshot");
+			VideoViewer.setVideoBorder(this,s,"true",screenshot);
 		}
 		
 		nodes = fslist.getNodesFiltered(nextid.toLowerCase()); // find the item
@@ -793,7 +815,8 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			FsNode node = (FsNode)nodes.get(0);
 			Fs.setProperty(node.getPath(),"public","false");
 			node.setProperty("public","false");	
-			VideoViewer.setVideoBorder(this,s,"false");
+			String screenshot = node.getProperty("screenshot");
+			VideoViewer.setVideoBorder(this,s,"false",screenshot);
 		}
 		
 	}
@@ -810,19 +833,11 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			FsNode node = (FsNode)nodes.get(0);
 			Fs.setProperty(node.getPath(),"public","false");
 			node.setProperty("public","false");	
-			VideoViewer.setVideoBorder(this,s,"false");
-		}
-		
-		nodes = fslist.getNodesFiltered(nextid.toLowerCase()); // find the item
-		if (nodes!=null && nodes.size()>0) {
-			FsNode node = (FsNode)nodes.get(0);
-			String type=node.getName();
-			String path=node.getPath();
-			open(s,type+","+path); // kinda ugly but o well.
+			String screenshot = node.getProperty("screenshot");
+			VideoViewer.setVideoBorder(this,s,"false", screenshot);
 		}
 	}
-
-	
+		
 	public void setscreenshot(Screen s,String content) {
 		log("setscreenshot "+content);
 		String[] params = content.split(",");

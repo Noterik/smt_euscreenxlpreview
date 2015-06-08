@@ -95,6 +95,9 @@ public class CollectionViewer extends ItemViewer implements ViewerInterface {
 		body+="<tr><td>Publisherbroadcaster<hr></td><th>"+node.getProperty("publisherbroadcaster")+"<hr></th></tr>";
 		body+="<tr><td>First Broadcastchannel<hr></td><th>"+node.getProperty("firstBroadcastChannel")+"<hr></th></tr>";
 		body+="<tr><td>Provider<hr></td><th>"+node.getProperty("provider")+"<hr></th></tr>";
+		body+="<tr><td>Aspect ratio<hr></td><th>"+node.getProperty("TechnicalInformation_aspectRatio")+"<hr></th></tr>";
+		body+="<tr><td>Local keywords<hr></td><th>"+node.getProperty("localKeyword")+"<hr></th></tr>";
+		body+="<tr><td>Information<hr></td><th>"+node.getProperty("information")+"<hr></th></tr>";
 		return body;
 	}
 	
@@ -183,6 +186,8 @@ public class CollectionViewer extends ItemViewer implements ViewerInterface {
 
 		body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itemimg\" src=\"http://images1.noterik.com/collection.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 	}
+	
+	
 	
 	public void showPreview(Html5ApplicationInterface app,Screen s,String path) {
 		

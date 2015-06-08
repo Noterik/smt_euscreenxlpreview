@@ -64,7 +64,8 @@ public class TeaserViewer extends ItemViewer implements ViewerInterface {
 	}
 	
 	private static String getOverviewPanel(FsNode node) {
-		String body="<div id=\"succsessMsgOnChange\" style=\"display: none;\">Your changes has been saved</div><tr><td>Screenshot text<hr></td>";
+		String body = "<tr><th>Hit enter to save your changes</th></tr><hr />";
+		body += "<div id=\"succsessMsgOnChange\" style=\"display: none;\">Your changes has been saved</div><tr><td>Screenshot text<hr></td>";
 		Boolean allowed = true;
 
 		if (allowed) {
@@ -178,21 +179,24 @@ public class TeaserViewer extends ItemViewer implements ViewerInterface {
 		String type=n.getName();
 		String path = n.getPath();
 
+		String publicstate = n.getProperty("public");
+		String selclass = "itemimg";
+		if (publicstate==null || publicstate.equals("")) {
+			selclass = "itemimg_yellow";
+		} else if (publicstate.equals("true")) {
+			selclass = "itemimg";
+		} else  if (publicstate.equals("false")) {
+			selclass = "itemimg_orange";
+		}
+		
 		// if we have a screenshot if so display it if not not show i fixed image.
 		if (screenshot!=null && !screenshot.equals("")) {
 			screenshot = setEdnaMapping(screenshot);
-			String publicstate = n.getProperty("public");
-			String selclass = "itemimg";
-			if (publicstate==null || publicstate.equals("")) {
-				selclass = "itemimg_yellow";
-			} else if (publicstate.equals("true")) {
-				selclass = "itemimg";
-			} else  if (publicstate.equals("false")) {
-				selclass = "itemimg_red";
-			}
 			body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\""+selclass+"\" src=\""+screenshot+"\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
-		} else {
-			body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\"itempimg\" width=\"320\" src=\"http://images1.noterik.com/teaser.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+		} else if(publicstate.equals("true") || publicstate.equals("false")){
+			body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\""+selclass+"\" width=\"320\" src=\"http://images1.noterik.com/teaser.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
+		}else {
+			body.append("<td><div class=\"item\" onmouseup=\"eddie.putLou('','open("+type+","+path+")');\"><img class=\""+"itemimg_blue"+"\" width=\"320\" src=\"http://images1.noterik.com/teaser.png\" /><div class=\"itemoverlay\">"+title+"</div></div></td>");
 		}
 	}
 	
@@ -204,13 +208,16 @@ public class TeaserViewer extends ItemViewer implements ViewerInterface {
 		
 		// if its a video we need its rawvideo node for where the file is.
 		FsNode teasernode = Fs.getNode(path);
-		String publicstate =null;
+		String publicstate = null;
+		String rawvideo = null;
+		String screenshot = null;
 		if (teasernode!=null) {
 			publicstate = teasernode.getProperty("public");
+			rawvideo = teasernode.getProperty("hasRaws");
 			boolean allowed = s.checkNodeActions(teasernode, "read");
 			//allowed = true;
 			// nice lets set the preview image
-			String screenshot  = teasernode.getProperty("screenshot");
+			screenshot  = teasernode.getProperty("screenshot");
 			if (screenshot!=null && !screenshot.equals("")) {
 				body += "<div id=\"screenshotlabel\">SELECTED MEDIA THUMBNAIL</div>";
 				screenshot = setEdnaMapping(screenshot);
@@ -222,6 +229,8 @@ public class TeaserViewer extends ItemViewer implements ViewerInterface {
 					body+="<img id=\"video1\" src=\""+screenshot+"\" />";
 					body +="<div id=\"screenshotdiv\"><img id=\"screenshot\" src=\""+screenshot+"\" /></div>";
 				}
+			}else {
+				body +="<div id=\"screenshotdiv\"><img id=\"screenshot\" src=\""+"http://images1.noterik.com/teaser.png"+"\" /></div>";
 			}
 			if (LazyHomer.inDeveloperMode()) {
 				body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreenxl.eu/item.html?id="+teasernode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";
@@ -234,8 +243,8 @@ public class TeaserViewer extends ItemViewer implements ViewerInterface {
 		}
 		
 		app.setContentOnScope(s,"itempageleft",body);
-		setVideoBorder(app,s,publicstate); // what do we do here instead, show the screenshot again ?
-		
+		//setVideoBorder(app,s,publicstate); // what do we do here instead, show the screenshot again ?
+		setVideoBorderOnItemPage(app, s, rawvideo, publicstate, screenshot);
 		ComponentInterface itempage = app.getComponentManager().getComponent("itempage");
 		itempage.putOnScope(s,"euscreenxlpreview", "copyrightvideo()");
 	}
@@ -264,13 +273,29 @@ public class TeaserViewer extends ItemViewer implements ViewerInterface {
 		}
 	}
 
-	public static void setVideoBorder(Html5ApplicationInterface app,Screen s,String publicstate) {
+	public static void setVideoBorder(Html5ApplicationInterface app,Screen s,String publicstate, String screenshot) {
 		ComponentInterface itempage = app.getComponentManager().getComponent("itempage");
+
 		if (publicstate==null || publicstate.equals("")) {
-			itempage.putOnScope(s,"euscreenxlpreview", "borderyellow()");
+			if(screenshot!=null && !screenshot.equals("")){
+				itempage.putOnScope(s,"euscreenxlpreview", "borderyellow()");
+			}else {
+				itempage.putOnScope(s,"euscreenxlpreview", "borderblue()");
+			}
 		} else if (publicstate.equals("true")) {
-			itempage.putOnScope(s,"euscreenxlpreview", "borderwhite()");
+				itempage.putOnScope(s,"euscreenxlpreview", "borderwhite()");
 		} else  if (publicstate.equals("false")) {
+				itempage.putOnScope(s,"euscreenxlpreview", "borderorange()");
+		}
+	}
+	
+	public static void setVideoBorderOnItemPage(Html5ApplicationInterface app,Screen s,String hasRaws, String publicstate, String screenshot) {
+		ComponentInterface itempage = app.getComponentManager().getComponent("itempage");
+		System.out.println("WE ARE HERE TEASER VIEWER!");
+		System.out.println("I am RAW:" + hasRaws);
+		if (hasRaws!=null && hasRaws.equals("true")) {
+			setVideoBorder(app,s,publicstate, screenshot);
+		}else{
 			itempage.putOnScope(s,"euscreenxlpreview", "borderred()");
 		}
 	}

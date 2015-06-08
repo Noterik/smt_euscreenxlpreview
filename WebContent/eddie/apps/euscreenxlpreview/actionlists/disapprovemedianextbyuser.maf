@@ -1,0 +1,2 @@
+log(reject media next)
+callServer(disapprovemedianextbyuser,screen,content)
