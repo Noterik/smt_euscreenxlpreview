@@ -1,13 +1,20 @@
 package org.springfield.lou.application.types.viewers;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
+import java.util.Scanner;
 
 import org.apache.commons.lang.StringUtils;
 import org.springfield.fs.*;
-import org.springfield.lou.application.Html5Application;
 import org.springfield.lou.application.Html5ApplicationInterface;
 import org.springfield.lou.application.components.ComponentInterface;
+import org.springfield.lou.application.types.EuscreenxlpreviewApplication;
 import org.springfield.lou.application.types.SearchParams;
 import org.springfield.lou.homer.LazyHomer;
 import org.springfield.lou.screen.Screen;
@@ -16,6 +23,8 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 		
 	private static String panels[] = { "Overview","Description","Native langauge","Copyright","Technical info","Noterik fields","Xml files"};
 	private static VideoViewer instance;
+	private static String ipAddress = "";
+	private static boolean isAndroid = false;
 	
 	public static VideoViewer instance() {
 		if (instance==null) instance = new VideoViewer();
@@ -23,7 +32,7 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 	}
 	
 	public void showPreview(Html5ApplicationInterface app,Screen s,String path) {
-		
+
 		//Prepare the notification box for right-click on video
 		String body = "<div id=\"copyrightBox\" style=\"display:none;\"><span class=\"dismiss\"><a title=\"dismiss this notification\">x</a></span><div>EUscreen offers thousands of items of film and television clips, photos and texts provided by audiovisual archives from all over Europe.<br/><br/>Are you interested in using a clip from our collection? Please click <a href='#'>here to contact the provider</a> of this clip and ask for the rights to reuse it.</div></div>";
 		// its a video object so lets load and send the video tag to the screens.
@@ -33,11 +42,25 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 		FsNode rawvideonode = Fs.getNode(path+"/rawvideo/1");
 		if (rawvideonode!=null) {
 			String mounts[] = rawvideonode.getProperty("mount").split(",");
-
+			
 			// based on the type of mount (path) create the rest of the video tag.
 			String mount = mounts[0];
 			if (mount.indexOf("http://")==-1 && mount.indexOf("rtmp://")==-1) {
-				String ap = "http://"+mount+".noterik.com/progressive/"+mount+path+"/rawvideo/1/raw.mp4";
+				Random randomGenerator = new Random();
+				Integer random= randomGenerator.nextInt(100000000);
+				String ticket = Integer.toString(random);
+				
+				String videoFile= "/"+mount+path+ "/rawvideo/1/raw.mp4";
+				ipAddress = EuscreenxlpreviewApplication.ipAddress;
+				isAndroid = EuscreenxlpreviewApplication.isAndroid;
+				
+				try{						
+					//System.out.println("CallingSendTicket");						
+					sendTicket(videoFile,ipAddress,ticket);
+				} catch (Exception e) {}
+				
+				
+				String ap = "http://"+mount+".noterik.com/progressive/"+mount+path+"/rawvideo/1/raw.mp4?ticket="+ticket;
 				body+="<source src=\""+ap+"\" type=\"video/mp4\" /></video>";
 			} else {
 				if (mount.indexOf("apasfw.apa.at/EUScreen/")!=-1) { // temp hack for ORF until uter is fixed
@@ -375,5 +398,54 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 		return null;
 	}	
 	
-
+	/////////////////////////////////////////////////////////////////////////////////////
+	//Themis NISV
+	/////////////////////////////////////////////////////////////////////////////////////
+	private static void sendTicket(String videoFile, String ipAddress, String ticket) throws IOException {
+		URL serverUrl = new URL("http://82.94.187.227:8001/acl/ticket");
+		HttpURLConnection urlConnection = (HttpURLConnection)serverUrl.openConnection();
+	
+		Long Sytime = System.currentTimeMillis();
+		Sytime = Sytime / 1000;
+		String expiry = Long.toString(Sytime+(15*60));
+		
+		// Indicate that we want to write to the HTTP request body
+		
+		urlConnection.setDoOutput(true);
+		urlConnection.setRequestMethod("POST");
+		videoFile=videoFile.substring(1);
+	
+		//System.out.println("I send this video address to the ticket server:"+videoFile);
+		//System.out.println("And this ticket:"+ticket);
+		//System.out.println("And this EXPIRY:"+expiry);
+		
+		// Writing the post data to the HTTP request body
+		BufferedWriter httpRequestBodyWriter = 
+		new BufferedWriter(new OutputStreamWriter(urlConnection.getOutputStream()));
+		String content="";
+		if (isAndroid){
+			content = "<fsxml><properties><ticket>"+ticket+"</ticket>"
+			+ "<uri>/"+videoFile+"</uri><ip>"+ipAddress+"</ip> "
+			+ "<role>user</role>"
+			+ "<expiry>"+expiry+"</expiry><maxRequests>4</maxRequests></properties></fsxml>";
+			isAndroid=false;
+			//System.out.println("Android ticket!");
+		}
+		else {
+			content = "<fsxml><properties><ticket>"+ticket+"</ticket>"
+			+ "<uri>/"+videoFile+"</uri><ip>"+ipAddress+"</ip> "
+			+ "<role>user</role>"
+			+ "<expiry>"+expiry+"</expiry><maxRequests>1</maxRequests></properties></fsxml>";
+		}
+		//System.out.println("sending content!!!!"+content);
+		httpRequestBodyWriter.write(content);
+		httpRequestBodyWriter.close();
+	
+		// Reading from the HTTP response body
+		Scanner httpResponseScanner = new Scanner(urlConnection.getInputStream());
+		while(httpResponseScanner.hasNextLine()) {
+			System.out.println(httpResponseScanner.nextLine());
+		}
+		httpResponseScanner.close();		
+	}	
 }

@@ -37,6 +37,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springfield.lou.application.ApplicationManager;
 import org.springfield.lou.application.Html5Application;
 import org.springfield.lou.application.Html5ApplicationInterface;
@@ -54,6 +56,8 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	
 	private static Boolean cached = false;
 	private static Boolean wantedna = true;
+	public static String ipAddress = "";
+	public static boolean isAndroid;
 	
 	//private static String panels[] = { "Overview","Description","Native langauge","Copyright","Technical info","Noterik fields","Xml files"};
 
@@ -1066,5 +1070,40 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		}
 	}
 	
-
+	public String getMetaHeaders(HttpServletRequest request) {
+		ipAddress=getClientIpAddress(request);
+		
+		System.out.println("Get ip = "+ipAddress);
+		
+		String browserType = request.getHeader("User-Agent");
+		if(browserType.indexOf("Mobile") != -1) {
+			String ua = request.getHeader("User-Agent").toLowerCase();
+			isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");	
+		}	
+		return "";
+	}
+	
+	private static final String[] HEADERS_TO_TRY = { 
+		"X-Forwarded-For",
+		"Proxy-Client-IP",
+		"WL-Proxy-Client-IP",
+		"HTTP_X_FORWARDED_FOR",
+		"HTTP_X_FORWARDED",
+		"HTTP_X_CLUSTER_CLIENT_IP",
+		"HTTP_CLIENT_IP",
+		"HTTP_FORWARDED_FOR",
+		"HTTP_FORWARDED",
+		"HTTP_VIA",
+		"REMOTE_ADDR" 
+	};
+	
+	public static String getClientIpAddress(HttpServletRequest request) {
+		for (String header : HEADERS_TO_TRY) {
+			String ip = request.getHeader(header);
+			if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {
+				return ip;
+			}
+		}
+		return request.getRemoteAddr();
+	}
 }

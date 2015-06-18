@@ -22,8 +22,6 @@ public class CollectionViewer extends ItemViewer implements ViewerInterface {
 		return instance;
 	}
 	
-
-	
 	public String getRelatedInfoHeader(FSList fslist,FsNode node,String path,String panel) {
 		System.out.println("NODETYPE="+node.getName());
 		

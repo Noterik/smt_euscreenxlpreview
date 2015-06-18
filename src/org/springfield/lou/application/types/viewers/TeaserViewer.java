@@ -25,9 +25,7 @@ public class TeaserViewer extends ItemViewer implements ViewerInterface {
 		if (instance==null) instance = new TeaserViewer();
 		return instance;
 	}
-	
 
-	
 	public String getRelatedInfoHeader(FSList fslist,FsNode node,String path,String panel) {
 		System.out.println("NODETYPE="+node.getName());
 		
