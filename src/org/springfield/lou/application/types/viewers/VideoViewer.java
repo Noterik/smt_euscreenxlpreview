@@ -427,7 +427,7 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 			content = "<fsxml><properties><ticket>"+ticket+"</ticket>"
 			+ "<uri>/"+videoFile+"</uri><ip>"+ipAddress+"</ip> "
 			+ "<role>user</role>"
-			+ "<expiry>"+expiry+"</expiry><maxRequests>4</maxRequests></properties></fsxml>";
+			+ "<expiry>"+expiry+"</expiry><maxRequests>10</maxRequests></properties></fsxml>";
 			isAndroid=false;
 			//System.out.println("Android ticket!");
 		}
@@ -435,7 +435,7 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 			content = "<fsxml><properties><ticket>"+ticket+"</ticket>"
 			+ "<uri>/"+videoFile+"</uri><ip>"+ipAddress+"</ip> "
 			+ "<role>user</role>"
-			+ "<expiry>"+expiry+"</expiry><maxRequests>1</maxRequests></properties></fsxml>";
+			+ "<expiry>"+expiry+"</expiry><maxRequests>10</maxRequests></properties></fsxml>";
 		}
 		//System.out.println("sending content!!!!"+content);
 		httpRequestBodyWriter.write(content);
