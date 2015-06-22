@@ -53,6 +53,13 @@ var Itempage = function(options){
 			}
 		}
 		
+	self.reuploadfromftp = function(id) {
+		$('#reuploadVideoFile_animoverlay').css('opacity','0.5');
+		$('#reuploadVideoFile_animoverlay').css('width','0%');
+		$('#reuploadVideoFile_animoverlay').animate({width:'100%'},1200,function() { self.reuploadDone(id); });
+		proceed = true;
+	}
+	
 	self.approvemedia = function(id) {
 		$('#approvemedia_animoverlay').css('opacity','0.5');
 		$('#approvemedia_animoverlay').css('width','0%');
@@ -88,11 +95,19 @@ var Itempage = function(options){
  		proceed = true;
     }
     
-    self.approvemediaDone = function(id) {
-		$('#approvemedia_animoverlay').css('opacity','0');
-		$('#approvemedia_animoverlay').css('width','0%');
+   	self.approvemediaDone = function(id) {
+   		$('#approvemedia_animoverlay').css('opacity','0');
+   		$('#approvemedia_animoverlay').css('width','0%');
+   		if (proceed) {
+   			eddie.putLou('','approvemedia('+id+')');
+   			proceed = false;
+   		}
+   	}
+    self.reuploadDone = function(id) {
+		$('#reuploadVideoFile_animoverlay').css('opacity','0');
+		$('#reuploadVideoFile_animoverlay').css('width','0%');
 		if (proceed) {
-			eddie.putLou('','approvemedia('+id+')');
+			eddie.putLou('','signalreupload('+id+')');
 			proceed = false;
 		}
     }

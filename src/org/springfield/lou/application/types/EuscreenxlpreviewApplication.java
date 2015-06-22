@@ -967,7 +967,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 			ServiceInterface uter = ServiceManager.getService("uter","10.88.8.34");//10.88.8.34 - C6
 			if (uter!=null) {
 				System.out.println("ReUploaditem: sending request to uter.");
-				uter.post(itemnode.getPath(), null, null);
+				uter.get(itemnode.getPath(), null, null);
 			}else{
 				System.out.println("ReUploaditem: uter service is null");
 			}
