@@ -112,10 +112,9 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 				body += getItemCommands(s,path,videonode.getId());
 				allowed = s.checkNodeActions(videonode, "write");
 				if (allowed && (publicstate==null || publicstate.equals("") || publicstate.equals("false"))) {
-					body += "<div onmouseup=\"eddie.putLou('','updateitemfromxml("+videonode.getId()+")');\" id=\"updateitemlink\">Update this video from Mint</div>";
+					body += "<div onmouseup=\"eddie.putLou('','updateitemfromxml("+videonode.getId()+")');\" id=\"updateitemlink\">Update metadata from Mint</div>";
+					body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"return components.itempage.reuploadfromftp('"+videonode.getId()+"')\" id=\"reuploadVideoFile\">Update video file from FTP<div id=\"reuploadVideoFile_animoverlay\"></div></div>";
 				}
-				//Still on progress
-				body += "<div onmouseup=\"return components.itempage.stopAnim()\" onmousedown=\"return components.itempage.reuploadfromftp('"+videonode.getId()+"')\" id=\"reuploadVideoFile\">Update video file from FTP<div id=\"reuploadVideoFile_animoverlay\"></div></div>";
 			}
 		}
 		
