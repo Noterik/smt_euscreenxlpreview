@@ -36,7 +36,7 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 		//Prepare the notification box for right-click on video
 		String body = "<div id=\"copyrightBox\" style=\"display:none;\"><span class=\"dismiss\"><a title=\"dismiss this notification\">x</a></span><div>EUscreen offers thousands of items of film and television clips, photos and texts provided by audiovisual archives from all over Europe.<br/><br/>Are you interested in using a clip from our collection? Please click <a href='#'>here to contact the provider</a> of this clip and ask for the rights to reuse it.</div></div>";
 		// its a video object so lets load and send the video tag to the screens.
-		body+="<video id=\"video1\" autoplay controls preload=\"none\" data-setup=\"{}\">";
+		body+="<video id=\"video1\" autoplay=\"autoplay\" controls preload=\"preload\">";
 
 		// if its a video we need its rawvideo node for where the file is.
 		FsNode rawvideonode = Fs.getNode(path+"/rawvideo/1");
@@ -61,6 +61,23 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 				
 				
 				String ap = "http://"+mount+".noterik.com/progressive/"+mount+path+"/rawvideo/1/raw.mp4?ticket="+ticket;
+				body+="<source src=\""+ap+"\" type=\"video/mp4\" /></video>";
+			} else if (mount.indexOf(".noterik.com/progressive/") > -1) {
+				Random randomGenerator = new Random();
+				Integer random= randomGenerator.nextInt(100000000);
+				String ticket = Integer.toString(random);
+				
+				String videoFile = mount.substring(mount.indexOf("progressive")+11);
+				
+				ipAddress = EuscreenxlpreviewApplication.ipAddress;
+				isAndroid = EuscreenxlpreviewApplication.isAndroid;
+				
+				try{						
+					//System.out.println("CallingSendTicket");						
+					sendTicket(videoFile,ipAddress,ticket);
+				} catch (Exception e) {}
+				
+				String ap = mount+"?ticket="+ticket;				
 				body+="<source src=\""+ap+"\" type=\"video/mp4\" /></video>";
 			} else {
 				if (mount.indexOf("apasfw.apa.at/EUScreen/")!=-1) { // temp hack for ORF until uter is fixed
