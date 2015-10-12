@@ -5,3 +5,4 @@ loadContent(screen,itempage) // itempage that is hidden until needed
 loadContent(screen,screenshoteditor) // screenshoteditor that is hidden until needed
 loadContent(screen,wordpressoverview) // wordpress that is hidden until needed
 loadContent(screen,notification) // basic notification animates in/out when needed
+loadContent(screen,searchinput) // searchinput

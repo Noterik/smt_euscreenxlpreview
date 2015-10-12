@@ -19,6 +19,8 @@
 */
 var Searchinput = function(options){
 	var self = {};
+
+	
 	var settings = {
 		start : 0,
 		provider : '',

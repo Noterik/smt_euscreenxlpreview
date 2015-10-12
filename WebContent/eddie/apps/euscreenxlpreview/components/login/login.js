@@ -11,6 +11,7 @@ function Login(options){
 		self.putMsg = function(msg){
 
 		}
+		
         self.change = function(){
         	eddie.putLou("login", "setProperties(" + $('#login_account').val() + "," + $('#login_password').val() + ")");
         }
