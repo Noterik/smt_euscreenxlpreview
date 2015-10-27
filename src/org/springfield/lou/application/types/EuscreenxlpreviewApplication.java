@@ -21,33 +21,29 @@
 */
 package org.springfield.lou.application.types;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
-import org.dom4j.Node;
-import org.dom4j.Namespace;
-import org.apache.commons.lang.StringUtils;
-
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springfield.lou.application.ApplicationManager;
-import org.springfield.lou.application.Html5Application;
-import org.springfield.lou.application.Html5ApplicationInterface;
-import org.springfield.lou.application.components.BasicComponent;
-import org.springfield.lou.application.components.ComponentInterface;
-import org.springfield.lou.application.types.viewers.*;
-import org.springfield.fs.*;
+import org.springfield.fs.FSList;
+import org.springfield.fs.FSListManager;
+import org.springfield.fs.FSSets;
+import org.springfield.fs.Fs;
+import org.springfield.fs.FsNode;
 import org.springfield.fs.MargeObserver;
-import org.springfield.lou.homer.*;
+import org.springfield.lou.application.Html5Application;
+import org.springfield.lou.application.components.ComponentInterface;
+import org.springfield.lou.application.types.viewers.AudioViewer;
+import org.springfield.lou.application.types.viewers.CollectionViewer;
+import org.springfield.lou.application.types.viewers.DocViewer;
+import org.springfield.lou.application.types.viewers.PictureViewer;
+import org.springfield.lou.application.types.viewers.SeriesViewer;
+import org.springfield.lou.application.types.viewers.TeaserViewer;
+import org.springfield.lou.application.types.viewers.VideoViewer;
+import org.springfield.lou.application.types.viewers.ViewerInterface;
 import org.springfield.lou.screen.Screen;
 import org.springfield.mojo.interfaces.ServiceInterface;
 import org.springfield.mojo.interfaces.ServiceManager;
@@ -579,7 +575,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	 */
 	private void setProviderOptions(Screen s,String provider, List<FsNode>nodes) {
 		FSSets sets = new FSSets(nodes,"provider",true);
-		String body = "<select id=\"searchinput_provider\" onchange=\"components.searchinput.setProvider(this.options[this.selectedIndex].value)\">";
+		String body = "<select id=\"searchinput_provider\" onchange=\"searchinput.setProvider(this.options[this.selectedIndex].value)\">";
 		if (!provider.equals("all")) body += "<option value=\""+provider+"\">"+provider+" ("+sets.getSetSize(provider)+")</option>";
 		body += "<option value=\"all\">all ("+nodes.size()+")</option>";
 			for (Iterator<String> iter = sets.getKeys() ; iter.hasNext(); ) {
