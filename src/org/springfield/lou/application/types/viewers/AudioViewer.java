@@ -226,9 +226,9 @@ public class AudioViewer extends ItemViewer implements ViewerInterface {
 			boolean allowed = s.checkNodeActions(audionode, "read");
 			
 			if (LazyHomer.inDeveloperMode()) {
-				body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreenxl.eu/item.html?id="+audionode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";
+				body += "<div id=\"portalpagelink\"><a href=\"http://euscreenxl.eu/item.html?id="+audionode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";
 			} else {
-				body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreen.eu/item.html?id="+audionode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";				
+				body += "<div id=\"portalpagelink\"><a href=\"http://euscreen.eu/item.html?id="+audionode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";				
 			}
 			if (allowed) {
 				body += getItemCommands(s,path,audionode.getId());

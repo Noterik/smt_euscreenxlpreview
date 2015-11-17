@@ -223,9 +223,9 @@ public class PictureViewer extends ItemViewer implements ViewerInterface {
 			body +="<img id=\"video1\" src=\""+screenshot+"\" />";
 			body +="<div id=\"screenshotdiv\"><img id=\"screenshot\" src=\""+screenshot+"\" /></div>";
 			if (LazyHomer.inDeveloperMode()) {
-				body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreenxl.eu/item.html?id="+picturenode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";
+				body += "<div id=\"portalpagelink\"><a href=\"http://euscreenxl.eu/item.html?id="+picturenode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";
 			} else {
-				body += "<div id=\"portalpagelink\"><a href=\"http://beta.euscreen.eu/item.html?id="+picturenode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";				
+				body += "<div id=\"portalpagelink\"><a href=\"http://euscreen.eu/item.html?id="+picturenode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";				
 			}
 			if (allowed) {
 				body += getItemCommands(s,path,picturenode.getId());
