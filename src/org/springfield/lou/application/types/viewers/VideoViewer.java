@@ -84,10 +84,12 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 					FsNode videonode = Fs.getNode(path);
 					mount="http://euscreen.orf.at/content/"+videonode.getProperty("filename");
 				}
+				
 				if (mount.indexOf("vrt.flash.streampower.be/")!=-1) { // hack vrt
 				//	mount = "rtmp://fmsod.rte.ie/laweb/2011/1018";
 					FsNode videonode = Fs.getNode(path);
-					mount = "http://images3.noterik.com/rafael/data/proxy/eu_vrt/"+videonode.getId()+".mp4";
+//					mount = "http://images3.noterik.com/rafael/data/proxy/eu_vrt/"+videonode.getId()+".mp4";
+					mount = "http://download.stream.vrt.be/event/euscreen/" + videonode.getId() + ".mp4"; 
 				}
 				body+="<source src=\""+mount+"\" type=\"video/mp4\" /></video>";
 			}
