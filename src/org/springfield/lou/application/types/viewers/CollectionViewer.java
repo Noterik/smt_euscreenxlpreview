@@ -105,7 +105,7 @@ public class CollectionViewer extends ItemViewer implements ViewerInterface {
 	private static String getNativeLangaugePanel(FsNode node) {
 		String body="<tr><td>Original language title<hr></td><th>"+node.getProperty("TitleSet_TitleSetInOriginalLanguage_title")+"<hr></th></tr>";
 		body+="<tr><td>Original language seriesOrCollectionTitle<hr></td><th>"+node.getProperty("TitleSet_TitleSetInOriginalLanguage_seriesOrCollectionTitle")+"<hr></th></tr>";
-		body+="<tr><td>Original language<hr></td><th>"+node.getProperty("originallanguage")+"<hr></th></tr>";
+		body+="<tr><td>Original language<hr></td><th>"+node.getProperty("LanguageInformation_languageUsed")+"<hr></th></tr>";
 		body+="<tr><td>Original summary<hr></td><th>"+node.getProperty("summary")+"<hr></th></tr>";
 		return body;
 	}
