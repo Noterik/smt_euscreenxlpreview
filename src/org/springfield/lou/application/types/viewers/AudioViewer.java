@@ -212,7 +212,7 @@ public class AudioViewer extends ItemViewer implements ViewerInterface {
 		} else if(ext.equalsIgnoreCase("ogg")) {
 			mimeType = "audio/ogg";
 		}
-		if (mount.indexOf("http://")==-1) {
+		if (mount.indexOf("http://") == -1 && mount.indexOf("https://") == -1) {
 			String ap = "http://"+mount+".noterik.com"+path+"/rawaudio/1/raw."+ext;
 	        body+="<source src=\""+ap+"\" type=\""+mimeType+"\" /></audio>";
 		} else {

@@ -45,7 +45,7 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 			
 			// based on the type of mount (path) create the rest of the video tag.
 			String mount = mounts[0];
-			if (mount.indexOf("http://")==-1 && mount.indexOf("rtmp://")==-1) {
+			if (mount.indexOf("http://") == -1 && mount.indexOf("rtmp://") == -1 && mount.indexOf("https://") == -1) {
 				Random randomGenerator = new Random();
 				Integer random= randomGenerator.nextInt(100000000);
 				String ticket = Integer.toString(random);
@@ -420,7 +420,7 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 	//Themis NISV
 	/////////////////////////////////////////////////////////////////////////////////////
 	private static void sendTicket(String videoFile, String ipAddress, String ticket) throws IOException {
-		URL serverUrl = new URL("http://stream.noterik.com:8080/lenny/acl/ticket");
+		URL serverUrl = new URL("http://ticket.noterik.com:8080/lenny/acl/ticket");
 		HttpURLConnection urlConnection = (HttpURLConnection)serverUrl.openConnection();
 	
 		Long Sytime = System.currentTimeMillis();
@@ -430,6 +430,7 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 		// Indicate that we want to write to the HTTP request body
 		
 		urlConnection.setDoOutput(true);
+		urlConnection.setRequestProperty("Content-Type", "text/xml");
 		urlConnection.setRequestMethod("POST");
 		videoFile=videoFile.substring(1);
 	
