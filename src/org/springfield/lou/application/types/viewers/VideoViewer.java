@@ -60,7 +60,7 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 				} catch (Exception e) {}
 				
 				
-				String ap = "http://"+mount+".noterik.com/progressive/"+mount+path+"/rawvideo/1/raw.mp4?ticket="+ticket;
+				String ap = "https://"+mount+".noterik.com/progressive/"+mount+path+"/rawvideo/1/raw.mp4?ticket="+ticket;
 				body+="<source src=\""+ap+"\" type=\"video/mp4\" /></video>";
 			} else if (mount.indexOf(".noterik.com/progressive/") > -1) {
 				Random randomGenerator = new Random();
@@ -68,6 +68,7 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 				String ticket = Integer.toString(random);
 				
 				String videoFile = mount.substring(mount.indexOf("progressive")+11);
+				videoFile = videoFile.indexOf("http://") == 0 ? videoFile.replaceFirst("http", "https") : videoFile;
 				
 				ipAddress = EuscreenxlpreviewApplication.ipAddress;
 				isAndroid = EuscreenxlpreviewApplication.isAndroid;
@@ -77,7 +78,8 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 					sendTicket(videoFile,ipAddress,ticket);
 				} catch (Exception e) {}
 				
-				String ap = mount+"?ticket="+ticket;				
+				String ap = mount+"?ticket="+ticket;
+				mount = mount.startsWith("http://") ? mount.replaceFirst("http", "https") : mount;
 				body+="<source src=\""+ap+"\" type=\"video/mp4\" /></video>";
 			} else {
 				if (mount.indexOf("apasfw.apa.at/EUScreen/")!=-1) { // temp hack for ORF until uter is fixed
@@ -125,7 +127,7 @@ public class VideoViewer extends ItemViewer implements ViewerInterface {
 			if (LazyHomer.inDeveloperMode()) {
 				body += "<div id=\"portalpagelink\"><a href=\"http://euscreenxl.eu/item.html?id="+videonode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";
 			} else {
-				body += "<div id=\"portalpagelink\"><a href=\"http://euscreen.eu/item.html?id="+videonode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";				
+				body += "<div id=\"portalpagelink\"><a href=\"https://euscreen.eu/item.html?id="+videonode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";				
 			}
 			if (allowed) {
 				body += getItemCommands(s,path,videonode.getId());

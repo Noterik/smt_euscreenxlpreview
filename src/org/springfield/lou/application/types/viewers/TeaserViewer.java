@@ -233,7 +233,7 @@ public class TeaserViewer extends ItemViewer implements ViewerInterface {
 			if (LazyHomer.inDeveloperMode()) {
 				body += "<div id=\"portalpagelink\"><a href=\"http://euscreenxl.eu/item.html?id="+teasernode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";
 			} else {
-				body += "<div id=\"portalpagelink\"><a href=\"http://euscreen.eu/item.html?id="+teasernode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";				
+				body += "<div id=\"portalpagelink\"><a href=\"https://euscreen.eu/item.html?id="+teasernode.getId()+"\" target=\"portal\"><font color=\"#6f9a19\">Open on portal</font></a></div>";				
 			}
 			if (allowed) {
 				body += getItemCommands(s,path,teasernode.getId());

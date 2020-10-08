@@ -973,11 +973,14 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 	private String setEdnaMapping(String screenshot) {
 		if (!wantedna) {
 			screenshot = screenshot.replace("edna/", "");
+			screenshot = screenshot.startsWith("http://") ? screenshot.replaceFirst("http", "https")  : screenshot;
 		} else {
 			int pos = screenshot.indexOf("edna/");
 			if 	(pos!=-1) {
-				screenshot = "http://images.euscreenxl.eu/"+screenshot.substring(pos+5);
+				screenshot = "https://images.euscreenxl.eu/"+screenshot.substring(pos+5);
 			//	screenshot = "http://player6.noterik.com:8080/edna/"+screenshot.substring(pos+5)+"??script=euscreen320t";
+			} else {
+				screenshot = screenshot.startsWith("http://") ? screenshot.replaceFirst("http", "https")  : screenshot;
 			}
 		}
 		screenshot +="?script=euscreen320t";
