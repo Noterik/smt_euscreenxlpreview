@@ -960,7 +960,7 @@ public class EuscreenxlpreviewApplication extends Html5Application implements Ma
 		System.out.println("Updateitem: nodes size "+nodes.size());
 		if (nodes!=null && nodes.size()>0) {
 			FsNode itemnode = (FsNode)nodes.get(0);
-			ServiceInterface uter = ServiceManager.getService("uter","10.88.8.34");//10.88.8.34 - C6
+			ServiceInterface uter = ServiceManager.getService("uter","172.31.4.201");//10.88.8.34 - C6
 			if (uter!=null) {
 				System.out.println("ReUploaditem: sending request to uter.");
 				uter.get(itemnode.getPath(), null, null);
